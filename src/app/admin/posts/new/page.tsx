@@ -416,7 +416,7 @@ public class Main {
                 )}
               </div>
 
-              {/* Cover Image */}
+              {/* Cover Image - Professional Upload Zone */}
               <div className="project-card">
                 <h3 className="font-semibold mb-4 flex items-center gap-2">
                   <svg className="w-5 h-5" style={{ color: 'var(--accent)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -425,75 +425,168 @@ public class Main {
                   Imagen de portada
                 </h3>
 
-                {/* Upload button */}
+                {/* Hidden file input */}
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/gif,image/webp"
                   onChange={handleImageUpload}
                   className="hidden"
                 />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  className="w-full py-3 rounded-lg transition flex items-center justify-center gap-2 mb-3"
-                  style={{
-                    background: 'var(--light-gray)',
-                    border: '1px dashed var(--border)',
-                    color: 'var(--gray)'
-                  }}
-                >
-                  {uploading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-gray-400 border-t-white rounded-full animate-spin"></div>
-                      Subiendo...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                      </svg>
-                      Subir imagen
-                    </>
-                  )}
-                </button>
 
-                <div className="relative">
-                  <input
-                    type="url"
-                    value={coverImage}
-                    onChange={(e) => setCoverImage(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg transition outline-none text-sm"
-                    style={{
-                      background: 'var(--light-gray)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--fg)'
-                    }}
-                    placeholder="O pega una URL de imagen"
-                  />
-                </div>
+                {/* Show upload zone or image preview */}
+                {!coverImage ? (
+                  <>
+                    {/* Drag & Drop Zone */}
+                    <div
+                      onClick={() => !uploading && fileInputRef.current?.click()}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = 'var(--accent)';
+                        e.currentTarget.style.background = 'rgba(59, 130, 246, 0.05)';
+                      }}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = 'var(--border)';
+                        e.currentTarget.style.background = 'var(--light-gray)';
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = 'var(--border)';
+                        e.currentTarget.style.background = 'var(--light-gray)';
+                        const file = e.dataTransfer.files[0];
+                        if (file && file.type.startsWith('image/')) {
+                          // Trigger the existing upload handler
+                          if (fileInputRef.current) {
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            fileInputRef.current.files = dataTransfer.files;
+                            fileInputRef.current.dispatchEvent(new Event('change', { bubbles: true }));
+                          }
+                        }
+                      }}
+                      className="cursor-pointer rounded-xl transition-all duration-200"
+                      style={{
+                        background: 'var(--light-gray)',
+                        border: '2px dashed var(--border)',
+                        padding: '2rem',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {uploading ? (
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="w-12 h-12 rounded-full flex items-center justify-center"
+                            style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
+                            <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin"
+                              style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }}></div>
+                          </div>
+                          <p style={{ color: 'var(--fg)' }}>Subiendo imagen...</p>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="w-14 h-14 rounded-full flex items-center justify-center"
+                            style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
+                            <svg className="w-7 h-7" style={{ color: 'var(--accent)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="font-medium" style={{ color: 'var(--fg)' }}>
+                              Arrastra una imagen aquí
+                            </p>
+                            <p className="text-sm mt-1" style={{ color: 'var(--gray)' }}>
+                              o haz clic para seleccionar
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--gray)' }}>
+                            <span className="px-2 py-0.5 rounded" style={{ background: 'var(--bg)' }}>JPG</span>
+                            <span className="px-2 py-0.5 rounded" style={{ background: 'var(--bg)' }}>PNG</span>
+                            <span className="px-2 py-0.5 rounded" style={{ background: 'var(--bg)' }}>WebP</span>
+                            <span className="px-2 py-0.5 rounded" style={{ background: 'var(--bg)' }}>GIF</span>
+                          </div>
+                          <p className="text-xs" style={{ color: 'var(--gray)' }}>
+                            Máximo 5MB
+                          </p>
+                        </div>
+                      )}
+                    </div>
 
-                {coverImage && (
-                  <div className="mt-3 relative group">
-                    <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border)' }}>
-                      <img
-                        src={coverImage}
-                        alt="Preview"
-                        className="w-full h-32 object-cover"
-                        onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
+                    {/* Divider */}
+                    <div className="flex items-center gap-3 my-4">
+                      <div className="flex-1 h-px" style={{ background: 'var(--border)' }}></div>
+                      <span className="text-xs" style={{ color: 'var(--gray)' }}>o</span>
+                      <div className="flex-1 h-px" style={{ background: 'var(--border)' }}></div>
+                    </div>
+
+                    {/* URL Input */}
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--gray)' }}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                      </div>
+                      <input
+                        type="url"
+                        value={coverImage}
+                        onChange={(e) => setCoverImage(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 rounded-lg transition outline-none text-sm"
+                        style={{
+                          background: 'var(--light-gray)',
+                          border: '1px solid var(--border)',
+                          color: 'var(--fg)'
+                        }}
+                        placeholder="Pegar URL de imagen externa"
                       />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setCoverImage('')}
-                      className="absolute top-2 right-2 p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
-                      style={{ background: 'rgba(0,0,0,0.7)' }}
-                    >
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </>
+                ) : (
+                  /* Image Preview - Professional */
+                  <div className="relative group rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                    <img
+                      src={coverImage}
+                      alt="Imagen de portada"
+                      className="w-full object-cover"
+                      style={{ height: '200px' }}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%239CA3AF" stroke-width="2"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>';
+                      }}
+                    />
+
+                    {/* Overlay with actions */}
+                    <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                      style={{ background: 'rgba(0,0,0,0.6)' }}>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-4 py-2 rounded-lg flex items-center gap-2 transition"
+                        style={{ background: 'var(--accent)', color: '#fff' }}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        Cambiar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCoverImage('')}
+                        className="px-4 py-2 rounded-lg flex items-center gap-2 transition"
+                        style={{ background: 'rgba(239, 68, 68, 0.9)', color: '#fff' }}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Eliminar
+                      </button>
+                    </div>
+
+                    {/* Image info badge */}
+                    <div className="absolute bottom-2 left-2 px-2 py-1 rounded text-xs flex items-center gap-1"
+                      style={{ background: 'rgba(0,0,0,0.7)', color: '#fff' }}>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                    </button>
+                      Imagen seleccionada
+                    </div>
                   </div>
                 )}
               </div>

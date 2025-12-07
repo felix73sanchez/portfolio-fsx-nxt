@@ -13,31 +13,71 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
-                    // Headings - clean, no borders
+                    // Headings - clean, with proper spacing from content
                     h1: ({ children }) => (
-                        <h1 className="text-2xl md:text-3xl font-bold mt-12 mb-5" style={{ color: 'var(--fg)' }}>
+                        <h1
+                            className="text-2xl md:text-3xl font-bold"
+                            style={{
+                                color: 'var(--fg)',
+                                marginTop: '3rem',
+                                marginBottom: '1.5rem',
+                                paddingTop: '1rem'
+                            }}
+                        >
                             {children}
                         </h1>
                     ),
                     h2: ({ children }) => (
-                        <h2 className="text-xl md:text-2xl font-bold mt-12 mb-5" style={{ color: 'var(--fg)' }}>
+                        <h2
+                            className="text-xl md:text-2xl font-bold"
+                            style={{
+                                color: 'var(--fg)',
+                                marginTop: '2.5rem',
+                                marginBottom: '1.25rem',
+                                paddingTop: '0.75rem'
+                            }}
+                        >
                             {children}
                         </h2>
                     ),
                     h3: ({ children }) => (
-                        <h3 className="text-lg md:text-xl font-semibold mt-10 mb-4" style={{ color: 'var(--fg)' }}>
+                        <h3
+                            className="text-lg md:text-xl font-semibold"
+                            style={{
+                                color: 'var(--fg)',
+                                marginTop: '2rem',
+                                marginBottom: '1rem',
+                                paddingTop: '0.5rem'
+                            }}
+                        >
                             {children}
                         </h3>
                     ),
                     h4: ({ children }) => (
-                        <h4 className="text-base md:text-lg font-semibold mt-8 mb-3" style={{ color: 'var(--fg)' }}>
+                        <h4
+                            className="text-base md:text-lg font-semibold"
+                            style={{
+                                color: 'var(--fg)',
+                                marginTop: '1.75rem',
+                                marginBottom: '0.75rem',
+                                paddingTop: '0.25rem'
+                            }}
+                        >
                             {children}
                         </h4>
                     ),
 
-                    // Paragraphs
+                    // Paragraphs - good spacing for readability
                     p: ({ children }) => (
-                        <p className="text-base md:text-lg leading-relaxed mb-6" style={{ color: 'var(--gray)', lineHeight: '1.75' }}>
+                        <p
+                            className="text-base md:text-lg leading-relaxed"
+                            style={{
+                                color: 'var(--gray)',
+                                lineHeight: '1.8',
+                                marginBottom: '1.5rem',
+                                marginTop: '0'
+                            }}
+                        >
                             {children}
                         </p>
                     ),
@@ -142,9 +182,16 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
                         </em>
                     ),
 
-                    // Horizontal rule
+                    // Horizontal rule - very subtle, almost invisible
                     hr: () => (
-                        <hr className="my-10 border-0 h-px" style={{ background: 'var(--border)' }} />
+                        <hr
+                            style={{
+                                border: 'none',
+                                height: '1px',
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                margin: '2.5rem 0'
+                            }}
+                        />
                     ),
 
                     // Images
