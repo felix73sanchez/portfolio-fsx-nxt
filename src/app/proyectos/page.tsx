@@ -141,7 +141,7 @@ export default function ProyectosPage() {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="link-btn"
+                      className={link.icon === 'backend' || link.icon === 'frontend' ? 'icon-badge' : 'link-btn'}
                     >
                       {getIcon(link.icon)}
                       <span>{link.label}</span>
