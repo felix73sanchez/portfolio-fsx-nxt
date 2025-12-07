@@ -1,0 +1,80 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createUser, getUserByEmail, generateToken } from '@/lib/auth';
+import { initializeDatabase } from '@/lib/db/init';
+
+// Código de invitación secreto - cámbialo a algo seguro
+const INVITATION_CODE = process.env.INVITATION_CODE || 'FSX1996TARGARYEN';
+
+export async function POST(request: NextRequest) {
+    try {
+        // Inicializar la base de datos
+        initializeDatabase();
+
+        const body = await request.json();
+        const { email, password, name, invitationCode } = body;
+
+        // Validar campos requeridos
+        if (!email || !password || !name) {
+            return NextResponse.json(
+                { error: 'Email, contraseña y nombre son requeridos' },
+                { status: 400 }
+            );
+        }
+
+        // Validar código de invitación
+        if (!invitationCode || invitationCode !== INVITATION_CODE) {
+            return NextResponse.json(
+                { error: 'Código de invitación inválido' },
+                { status: 403 }
+            );
+        }
+
+        // Validar formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return NextResponse.json(
+                { error: 'Formato de email inválido' },
+                { status: 400 }
+            );
+        }
+
+        // Validar longitud de contraseña
+        if (password.length < 6) {
+            return NextResponse.json(
+                { error: 'La contraseña debe tener al menos 6 caracteres' },
+                { status: 400 }
+            );
+        }
+
+        // Verificar si el usuario ya existe
+        const existingUser = getUserByEmail(email);
+        if (existingUser) {
+            return NextResponse.json(
+                { error: 'Este email ya está registrado' },
+                { status: 409 }
+            );
+        }
+
+        // Crear el usuario
+        const user = createUser(email, password, name);
+
+        // Generar token
+        const token = generateToken(user.id, user.email);
+
+        return NextResponse.json({
+            message: 'Usuario registrado exitosamente',
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+            },
+            token,
+        });
+    } catch (error) {
+        console.error('Error en registro:', error);
+        return NextResponse.json(
+            { error: 'Error interno del servidor' },
+            { status: 500 }
+        );
+    }
+}

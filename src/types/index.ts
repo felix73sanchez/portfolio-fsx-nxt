@@ -17,6 +17,9 @@ export interface BlogPost {
   createdAt: string;
   updatedAt: string;
   publishedAt?: string | null;
+  // Author info
+  authorId?: number | null;
+  authorName?: string | null;
 }
 
 export interface CreateBlogPostInput {
@@ -26,6 +29,7 @@ export interface CreateBlogPostInput {
   coverImage?: string | null;
   tags?: string[];
   published?: boolean;
+  authorId?: number;
 }
 
 export interface UpdateBlogPostInput {

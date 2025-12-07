@@ -10,6 +10,7 @@ export default function AdminRegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [invitationCode, setInvitationCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -27,13 +28,18 @@ export default function AdminRegisterPage() {
       return;
     }
 
+    if (!invitationCode.trim()) {
+      setError('El código de invitación es requerido');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name })
+        body: JSON.stringify({ email, password, name, invitationCode })
       });
 
       if (res.ok) {
@@ -136,7 +142,7 @@ export default function AdminRegisterPage() {
               <p className="text-xs mt-1" style={{ color: 'var(--gray)' }}>Mínimo 6 caracteres</p>
             </div>
 
-            <div className="mb-6">
+            <div className="mb-5">
               <label className="block text-sm font-medium mb-2">Confirmar Contraseña</label>
               <input
                 type="password"
@@ -151,6 +157,30 @@ export default function AdminRegisterPage() {
                 }}
                 placeholder="••••••••"
               />
+            </div>
+
+            {/* Invitation Code Field */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium mb-2">
+                Código de Invitación
+                <span className="ml-1" style={{ color: 'var(--accent)' }}>*</span>
+              </label>
+              <input
+                type="text"
+                value={invitationCode}
+                onChange={(e) => setInvitationCode(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-lg transition outline-none"
+                style={{
+                  background: 'var(--light-gray)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--fg)'
+                }}
+                placeholder="Ingresa el código de acceso"
+              />
+              <p className="text-xs mt-1" style={{ color: 'var(--gray)' }}>
+                Solicita el código al administrador
+              </p>
             </div>
 
             <button

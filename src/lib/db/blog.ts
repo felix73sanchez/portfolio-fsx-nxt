@@ -14,11 +14,29 @@ export function getAllPublishedPosts(): BlogPost[] {
   const db = getDb();
   const posts = db
     .prepare(`
-      SELECT id, slug, title, description, content, coverImage, tags, 
-             published, createdAt, updatedAt, publishedAt 
-      FROM blog_posts 
-      WHERE published = 1 
-      ORDER BY publishedAt DESC
+      SELECT bp.id, bp.slug, bp.title, bp.description, bp.content, bp.coverImage, bp.tags, 
+             bp.published, bp.createdAt, bp.updatedAt, bp.publishedAt, bp.authorId,
+             u.name as authorName
+      FROM blog_posts bp
+      LEFT JOIN users u ON bp.authorId = u.id
+      WHERE bp.published = 1 
+      ORDER BY bp.publishedAt DESC
+    `)
+    .all() as any[];
+
+  return posts.map(parseBlogPost);
+}
+
+export function getAllPosts(): BlogPost[] {
+  const db = getDb();
+  const posts = db
+    .prepare(`
+      SELECT bp.id, bp.slug, bp.title, bp.description, bp.content, bp.coverImage, bp.tags, 
+             bp.published, bp.createdAt, bp.updatedAt, bp.publishedAt, bp.authorId,
+             u.name as authorName
+      FROM blog_posts bp
+      LEFT JOIN users u ON bp.authorId = u.id
+      ORDER BY bp.createdAt DESC
     `)
     .all() as any[];
 
@@ -29,10 +47,12 @@ export function getPostBySlug(slug: string): BlogPost | null {
   const db = getDb();
   const post = db
     .prepare(`
-      SELECT id, slug, title, description, content, coverImage, tags, 
-             published, createdAt, updatedAt, publishedAt 
-      FROM blog_posts 
-      WHERE slug = ?
+      SELECT bp.id, bp.slug, bp.title, bp.description, bp.content, bp.coverImage, bp.tags, 
+             bp.published, bp.createdAt, bp.updatedAt, bp.publishedAt, bp.authorId,
+             u.name as authorName
+      FROM blog_posts bp
+      LEFT JOIN users u ON bp.authorId = u.id
+      WHERE bp.slug = ?
     `)
     .get(slug) as any | undefined;
 
@@ -43,10 +63,12 @@ export function getPostById(id: number): BlogPost | null {
   const db = getDb();
   const post = db
     .prepare(`
-      SELECT id, slug, title, description, content, coverImage, tags, 
-             published, createdAt, updatedAt, publishedAt 
-      FROM blog_posts 
-      WHERE id = ?
+      SELECT bp.id, bp.slug, bp.title, bp.description, bp.content, bp.coverImage, bp.tags, 
+             bp.published, bp.createdAt, bp.updatedAt, bp.publishedAt, bp.authorId,
+             u.name as authorName
+      FROM blog_posts bp
+      LEFT JOIN users u ON bp.authorId = u.id
+      WHERE bp.id = ?
     `)
     .get(id) as any | undefined;
 
@@ -57,11 +79,12 @@ export function createPost(input: CreateBlogPostInput): BlogPost {
   const db = getDb();
   const slug = slugify(input.title);
   const tags = JSON.stringify(input.tags || []);
+  const now = new Date().toISOString();
 
   const result = db
     .prepare(`
-      INSERT INTO blog_posts (slug, title, description, content, coverImage, tags, published, publishedAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO blog_posts (slug, title, description, content, coverImage, tags, published, createdAt, updatedAt, publishedAt, authorId)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `)
     .run(
       slug,
@@ -71,7 +94,10 @@ export function createPost(input: CreateBlogPostInput): BlogPost {
       input.coverImage || null,
       tags,
       input.published ? 1 : 0,
-      input.published ? new Date().toISOString() : null
+      now,
+      now,
+      input.published ? now : null,
+      input.authorId || null
     );
 
   const post = getPostById(result.lastInsertRowid as number);
@@ -143,5 +169,7 @@ function parseBlogPost(row: any): BlogPost {
     ...row,
     tags: typeof row.tags === 'string' ? JSON.parse(row.tags) : row.tags || [],
     published: Boolean(row.published),
+    authorId: row.authorId || null,
+    authorName: row.authorName || null,
   };
 }
