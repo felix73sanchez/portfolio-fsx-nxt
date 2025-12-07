@@ -171,13 +171,19 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Action Button */}
-        <div className="mb-6">
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-4 mb-6">
           <Link href="/admin/posts/new" className="cta-btn inline-flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             Crear nuevo artículo
+          </Link>
+          <Link href="/admin/projects" className="link-btn inline-flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Administrar Proyectos
           </Link>
         </div>
 
@@ -208,8 +214,8 @@ export default function AdminDashboardPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${post.published
-                          ? 'bg-green-500/10 text-green-500'
-                          : 'bg-yellow-500/10 text-yellow-500'
+                        ? 'bg-green-500/10 text-green-500'
+                        : 'bg-yellow-500/10 text-yellow-500'
                         }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${post.published ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
                         {post.published ? 'Publicado' : 'Borrador'}

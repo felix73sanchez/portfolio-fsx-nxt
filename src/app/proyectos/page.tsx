@@ -1,59 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header, Footer } from '@/components';
-
-interface Proyecto {
-  id: string;
-  title: string;
-  description: string;
-  technologies: string[];
-  links?: {
-    label: string;
-    url: string;
-    icon?: 'github' | 'backend' | 'frontend' | 'demo';
-  }[];
-}
-
-const proyectos: Proyecto[] = [
-  {
-    id: '1',
-    title: 'Factus',
-    description: 'Challenge de integración de facturación electrónica. Sistema completo con backend en Spring Boot y frontend en Next.js/React para la gestión y emisión de facturas electrónicas cumpliendo con los estándares dominicanos.',
-    technologies: ['Java', 'Spring Boot', 'Next.js', 'React', 'TypeScript'],
-    links: [
-      { label: 'Backend', url: 'https://github.com/felixsanchez', icon: 'backend' },
-      { label: 'Frontend', url: 'https://github.com/felixsanchez', icon: 'frontend' }
-    ]
-  },
-  {
-    id: '2',
-    title: 'Decade Shop',
-    description: 'Prototipo de e-commerce para tienda de ropa (DECA). Desarrollado con TypeScript y Next.js, incluye carrito de compras, gestión de productos y sistema de checkout.',
-    technologies: ['TypeScript', 'Next.js', 'React', 'Tailwind CSS'],
-    links: [
-      { label: 'GitHub', url: 'https://github.com/felixsanchez', icon: 'github' }
-    ]
-  },
-  {
-    id: '3',
-    title: 'Sistema de Gestión Bancaria',
-    description: 'Plataforma integral de gestión de operaciones bancarias con múltiples módulos de procesamiento de transacciones, reportes y administración de cuentas.',
-    technologies: ['C#', '.NET Core', 'SQL Server', 'Azure'],
-    links: [
-      { label: 'GitHub', url: 'https://github.com/felixsanchez', icon: 'github' }
-    ]
-  },
-  {
-    id: '4',
-    title: 'Portfolio Personal',
-    description: 'Sitio portafolio con sección de blog integrada, autenticación personalizada y panel de administración para gestión de contenido.',
-    technologies: ['Next.js', 'TypeScript', 'SQLite', 'Tailwind CSS'],
-    links: [
-      { label: 'GitHub', url: 'https://github.com/felixsanchez/portfolio-fsx', icon: 'github' }
-    ]
-  }
-];
+import { Project } from '@/types';
 
 const getIcon = (icon?: string) => {
   switch (icon) {
@@ -75,6 +25,19 @@ const getIcon = (icon?: string) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
         </svg>
       );
+    case 'demo':
+      return (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+    case 'website':
+      return (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+        </svg>
+      );
     default:
       return (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,6 +48,27 @@ const getIcon = (icon?: string) => {
 };
 
 export default function ProyectosPage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch('/api/projects');
+        if (res.ok) {
+          const data = await res.json();
+          setProjects(data);
+        }
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
       <Header />
@@ -98,60 +82,82 @@ export default function ProyectosPage() {
           </p>
         </div>
 
-        {/* Projects Grid */}
-        <div className="space-y-8 mb-16">
-          {proyectos.map((proyecto) => (
-            <div key={proyecto.id} className="project-card">
-              {/* Title */}
-              <h2 className="text-xl md:text-2xl font-bold mb-4">{proyecto.title}</h2>
-
-              {/* Description */}
-              <p className="mb-6" style={{ color: 'var(--gray)', lineHeight: 1.7 }}>
-                {proyecto.description}
-              </p>
-
-              {/* Technologies - Simple clean design without icons */}
-              <div style={{ marginBottom: '24px' }}>
-                <div className="flex flex-wrap" style={{ gap: '8px' }}>
-                  {proyecto.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="tech-badge"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Links */}
-              {proyecto.links && proyecto.links.length > 0 && (
-                <div
-                  className="flex flex-wrap"
-                  style={{
-                    gap: '12px',
-                    paddingTop: '20px',
-                    marginTop: '8px',
-                    borderTop: '1px solid var(--border)'
-                  }}
-                >
-                  {proyecto.links.map((link, index) => (
-                    <a
-                      key={index}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={link.icon === 'backend' || link.icon === 'frontend' ? 'icon-badge' : 'link-btn'}
-                    >
-                      {getIcon(link.icon)}
-                      <span>{link.label}</span>
-                    </a>
-                  ))}
-                </div>
-              )}
+        {/* Loading State */}
+        {loading ? (
+          <div className="text-center py-16">
+            <div className="w-12 h-12 border-2 rounded-full animate-spin mx-auto mb-4"
+              style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }}></div>
+            <p style={{ color: 'var(--gray)' }}>Cargando proyectos...</p>
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="text-center py-16 project-card">
+            <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
+              style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
+              <svg className="w-8 h-8" style={{ color: 'var(--accent)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
             </div>
-          ))}
-        </div>
+            <h3 className="text-xl font-semibold mb-2">Próximamente</h3>
+            <p style={{ color: 'var(--gray)' }}>
+              Los proyectos se están preparando...
+            </p>
+          </div>
+        ) : (
+          /* Projects Grid */
+          <div className="space-y-8 mb-16">
+            {projects.map((proyecto) => (
+              <div key={proyecto.id} className="project-card">
+                {/* Title */}
+                <h2 className="text-xl md:text-2xl font-bold mb-4">{proyecto.title}</h2>
+
+                {/* Description */}
+                <p className="mb-6" style={{ color: 'var(--gray)', lineHeight: 1.7 }}>
+                  {proyecto.description}
+                </p>
+
+                {/* Technologies */}
+                <div style={{ marginBottom: '24px' }}>
+                  <div className="flex flex-wrap" style={{ gap: '8px' }}>
+                    {proyecto.technologies.map((tech) => (
+                      <span
+                        key={tech}
+                        className="tech-badge"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Links */}
+                {proyecto.links && proyecto.links.length > 0 && (
+                  <div
+                    className="flex flex-wrap"
+                    style={{
+                      gap: '12px',
+                      paddingTop: '20px',
+                      marginTop: '8px',
+                      borderTop: '1px solid var(--border)'
+                    }}
+                  >
+                    {proyecto.links.map((link, index) => (
+                      <a
+                        key={index}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={link.icon === 'backend' || link.icon === 'frontend' ? 'icon-badge' : 'link-btn'}
+                      >
+                        {getIcon(link.icon)}
+                        <span>{link.label}</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Back to home */}
         <div className="text-center pt-8" style={{ borderTop: '1px solid var(--border)' }}>

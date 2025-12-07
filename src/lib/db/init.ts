@@ -55,14 +55,31 @@ export function initializeDatabase(): void {
   // Agregar columna authorId si no existe (migración)
   try {
     database.exec(`ALTER TABLE blog_posts ADD COLUMN authorId INTEGER REFERENCES users(id)`);
-  } catch (e) {
+  } catch {
     // La columna probablemente ya existe, ignorar el error
   }
+
+  // Crear tabla de proyectos
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS projects (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      technologies TEXT NOT NULL,
+      links TEXT,
+      displayOrder INTEGER DEFAULT 0,
+      visible INTEGER DEFAULT 1,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    )
+  `);
 
   // Crear índices
   database.exec(`
     CREATE INDEX IF NOT EXISTS idx_blog_slug ON blog_posts(slug);
     CREATE INDEX IF NOT EXISTS idx_blog_published ON blog_posts(published);
     CREATE INDEX IF NOT EXISTS idx_blog_author ON blog_posts(authorId);
+    CREATE INDEX IF NOT EXISTS idx_projects_order ON projects(displayOrder);
+    CREATE INDEX IF NOT EXISTS idx_projects_visible ON projects(visible);
   `);
 }

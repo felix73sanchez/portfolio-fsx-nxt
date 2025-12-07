@@ -47,3 +47,40 @@ export interface AuthToken {
   iat: number;
   exp: number;
 }
+
+// Project types
+export interface ProjectLink {
+  label: string;
+  url: string;
+  icon?: 'github' | 'backend' | 'frontend' | 'demo' | 'website';
+}
+
+export interface Project {
+  id: number;
+  title: string;
+  description: string;
+  technologies: string[];
+  links: ProjectLink[];
+  displayOrder: number;
+  visible: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateProjectInput {
+  title: string;
+  description: string;
+  technologies: string[];
+  links?: ProjectLink[];
+  displayOrder?: number;
+  visible?: boolean;
+}
+
+export interface UpdateProjectInput {
+  title?: string;
+  description?: string;
+  technologies?: string[];
+  links?: ProjectLink[];
+  displayOrder?: number;
+  visible?: boolean;
+}
