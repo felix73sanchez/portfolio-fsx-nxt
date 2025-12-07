@@ -147,4 +147,4 @@ Las contribuciones son bienvenidas. Si tienes ideas para mejorar el dashboard o 
 Este proyecto está bajo la licencia **MIT**. Eres libre de usarlo, modificarlo y distribuirlo para tu propio uso personal o comercial.
 
 ---
-**Creado con ❤️ por [Felix Sánchez](https://github.com/felix73sanchez)**
+**Creado por [FSX](https://github.com/felix73sanchez)**
