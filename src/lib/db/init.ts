@@ -74,6 +74,60 @@ export function initializeDatabase(): void {
     )
   `);
 
+  // Crear tabla de configuración del sitio (perfil)
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS site_config (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      key TEXT UNIQUE NOT NULL,
+      value TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    )
+  `);
+
+  // Crear tabla de experiencias laborales
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS experiences (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      company TEXT NOT NULL,
+      location TEXT,
+      startDate TEXT NOT NULL,
+      endDate TEXT,
+      current INTEGER DEFAULT 0,
+      responsibilities TEXT NOT NULL,
+      displayOrder INTEGER DEFAULT 0,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    )
+  `);
+
+  // Crear tabla de habilidades
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS skills (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category TEXT NOT NULL,
+      name TEXT NOT NULL,
+      displayOrder INTEGER DEFAULT 0
+    )
+  `);
+
+  // Crear tabla de educación
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS education (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      degree TEXT NOT NULL,
+      institution TEXT NOT NULL,
+      location TEXT,
+      startYear INTEGER NOT NULL,
+      endYear INTEGER,
+      current INTEGER DEFAULT 0,
+      description TEXT,
+      displayOrder INTEGER DEFAULT 0,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    )
+  `);
+
   // Crear índices
   database.exec(`
     CREATE INDEX IF NOT EXISTS idx_blog_slug ON blog_posts(slug);
@@ -81,5 +135,9 @@ export function initializeDatabase(): void {
     CREATE INDEX IF NOT EXISTS idx_blog_author ON blog_posts(authorId);
     CREATE INDEX IF NOT EXISTS idx_projects_order ON projects(displayOrder);
     CREATE INDEX IF NOT EXISTS idx_projects_visible ON projects(visible);
+    CREATE INDEX IF NOT EXISTS idx_site_config_key ON site_config(key);
+    CREATE INDEX IF NOT EXISTS idx_experiences_order ON experiences(displayOrder);
+    CREATE INDEX IF NOT EXISTS idx_skills_category ON skills(category);
+    CREATE INDEX IF NOT EXISTS idx_education_order ON education(displayOrder);
   `);
 }

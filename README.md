@@ -1,122 +1,183 @@
-# Portfolio FSX - Felix Sánchez
+# Portfolio FSX - Open Source Portfolio & Blog
 
-Portfolio personal y blog construido con Next.js 16, TypeScript y SQLite.
+Un portfolio personal y blog open source construido con Next.js 16, TypeScript y SQLite. Incluye panel de administración completo para gestionar contenido sin tocar código.
 
-## 🚀 Características
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![SQLite](https://img.shields.io/badge/SQLite-3-green)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-### Portafolio
-- **Página principal** con información personal, experiencia y habilidades técnicas
-- **Página de proyectos** dinámica con administración desde panel admin
-- **Diseño responsivo** con tema oscuro por defecto y opción de tema claro
-- **Animaciones y efectos hover** para una experiencia premium
+## ✨ Características
 
-### Blog
-- **Sistema de blog completo** con soporte para Markdown (GFM)
-- **Vista previa en tiempo real** al escribir artículos
-- **Barra de herramientas Markdown** para formateo rápido
-- **Etiquetas** para organizar contenido
-- **Imágenes de portada** con drag & drop
-- **Autores** con atribución automática
+### 🎨 Portafolio
+- Página principal con información personal, experiencia y habilidades
+- Proyectos dinámicos gestionados desde panel admin
+- Diseño responsivo con tema oscuro/claro
+- Animaciones y efectos hover premium
 
-### Panel de Administración
-- **Autenticación JWT** con código de invitación para registro
-- **Dashboard** con estadísticas de artículos
-- **CRUD completo** para artículos del blog
-- **CRUD completo** para proyectos del portafolio
-- **Subida de imágenes** a `/public/uploads/`
+### 📝 Blog
+- Sistema de blog completo con Markdown (GFM)
+- Vista previa en tiempo real al escribir
+- Barra de herramientas Markdown
+- Etiquetas y categorías
+- Imágenes de portada con drag & drop
+- Atribución de autores
 
-## 🛠️ Tecnologías
+### ⚙️ Panel de Administración
+- Autenticación JWT segura
+- Código de invitación para registro
+- Dashboard con estadísticas
+- CRUD completo para blog y proyectos
+- Subida de imágenes
 
-- **Frontend**: Next.js 16, React 19, TypeScript
-- **Estilos**: Tailwind CSS 4, CSS Variables
-- **Base de datos**: SQLite (better-sqlite3)
-- **Autenticación**: JWT (jsonwebtoken), bcryptjs
-- **Markdown**: react-markdown, remark-gfm
+## 🚀 Inicio Rápido
 
-## 📦 Instalación
+### 1. Clonar el repositorio
 
 ```bash
-# Clonar el repositorio
-git clone https://github.com/felixsanchez/portfolio-fsx-nxt.git
-
-# Instalar dependencias
-npm install
-
-# Sembrar proyectos iniciales (opcional)
-npx tsx scripts/seed-projects.ts
-
-# Ejecutar en desarrollo
-npm run dev
+git clone https://github.com/tu-usuario/portfolio-fsx-nxt.git
+cd portfolio-fsx-nxt
 ```
 
-## 🔧 Variables de Entorno
+### 2. Instalar dependencias
+
+```bash
+npm install
+```
+
+### 3. Configurar variables de entorno
 
 Crear archivo `.env.local`:
 
 ```env
-JWT_SECRET=tu-clave-secreta-muy-segura
+# Clave secreta para JWT (genera una clave segura)
+JWT_SECRET=tu-clave-secreta-muy-segura-cambiar-en-produccion
+
+# Código de invitación para registrar administradores
 INVITATION_CODE=tu-codigo-de-invitacion
 ```
+
+### 4. Ejecutar en desarrollo
+
+```bash
+npm run dev
+```
+
+El proyecto estará disponible en [http://localhost:3000](http://localhost:3000)
+
+### 5. Configurar tu cuenta de admin
+
+1. Ve a `/admin/register`
+2. Ingresa el código de invitación que configuraste
+3. Crea tu cuenta
+4. Inicia sesión en `/admin/login`
+5. ¡Listo! Accede al dashboard en `/admin/dashboard`
+
+### 6. (Opcional) Sembrar datos de ejemplo
+
+```bash
+npx tsx scripts/seed-projects.ts
+```
+
+## 🛠️ Stack Tecnológico
+
+| Tecnología | Uso |
+|------------|-----|
+| **Next.js 16** | Framework React con App Router |
+| **React 19** | Biblioteca UI |
+| **TypeScript** | Tipado estático |
+| **Tailwind CSS 4** | Estilos utility-first |
+| **SQLite** | Base de datos embebida |
+| **JWT** | Autenticación |
+| **react-markdown** | Renderizado Markdown |
 
 ## 📁 Estructura del Proyecto
 
 ```
-src/
-├── app/
-│   ├── admin/           # Panel de administración
-│   │   ├── dashboard/   # Dashboard principal
-│   │   ├── login/       # Login de admin
-│   │   ├── register/    # Registro con código de invitación
-│   │   ├── posts/       # CRUD de artículos
-│   │   └── projects/    # CRUD de proyectos
-│   ├── api/             # API Routes
-│   │   ├── auth/        # Login y registro
-│   │   ├── blog/        # CRUD de blog
-│   │   ├── projects/    # CRUD de proyectos
-│   │   └── upload/      # Subida de imágenes
-│   ├── blog/            # Páginas públicas del blog
-│   └── proyectos/       # Página pública de proyectos
-├── components/          # Componentes reutilizables
-│   ├── Header.tsx       # Header con navegación
-│   ├── Footer.tsx       # Footer
-│   ├── MarkdownRenderer.tsx  # Renderizador de Markdown
-│   └── ThemeContext.tsx # Contexto para tema claro/oscuro
-├── lib/
-│   ├── auth/            # Funciones de autenticación
-│   └── db/              # Funciones de base de datos
-└── types/               # Tipos TypeScript
+├── src/
+│   ├── app/
+│   │   ├── admin/           # Panel de administración
+│   │   │   ├── dashboard/   # Dashboard principal
+│   │   │   ├── login/       # Login
+│   │   │   ├── register/    # Registro con código
+│   │   │   ├── posts/       # Gestión de blog
+│   │   │   └── projects/    # Gestión de proyectos
+│   │   ├── api/             # API Routes
+│   │   │   ├── auth/        # Autenticación
+│   │   │   ├── blog/        # CRUD blog
+│   │   │   ├── projects/    # CRUD proyectos
+│   │   │   └── upload/      # Subida de imágenes
+│   │   ├── blog/            # Páginas del blog
+│   │   └── proyectos/       # Página de proyectos
+│   ├── components/          # Componentes React
+│   ├── lib/                 # Utilidades
+│   │   ├── auth/            # Autenticación
+│   │   └── db/              # Base de datos
+│   └── types/               # Tipos TypeScript
+├── data/                    # Base de datos SQLite (auto-generada)
+├── public/
+│   └── uploads/             # Imágenes subidas
+└── scripts/                 # Scripts de utilidad
 ```
-
-## 🔐 Acceso al Panel de Admin
-
-1. Ve a `/admin/register` y registra una cuenta con el código de invitación
-2. Inicia sesión en `/admin/login`
-3. Accede al dashboard en `/admin/dashboard`
 
 ## 📝 Scripts Disponibles
 
 ```bash
-npm run dev       # Servidor de desarrollo
-npm run build     # Build de producción
-npm run start     # Servidor de producción
-npm run lint      # Linting con ESLint
+npm run dev       # Desarrollo
+npm run build     # Build producción
+npm run start     # Servidor producción
+npm run lint      # Linting
 ```
 
-## 🗄️ Base de Datos
+## 🔐 Seguridad
 
-La base de datos SQLite se crea automáticamente en `data/portfolio.db` con las siguientes tablas:
+- Las contraseñas se hashean con bcrypt
+- Autenticación con JWT
+- Código de invitación para registro
+- La base de datos y uploads no se suben a git
 
-- **users**: Usuarios administradores
-- **blog_posts**: Artículos del blog
-- **projects**: Proyectos del portafolio
+## 🎨 Personalización
+
+### Cambiar información personal
+
+Edita `src/app/page.tsx` para cambiar:
+- Nombre
+- Descripción
+- Links de contacto
+- Experiencia
+- Habilidades
+
+### Cambiar colores
+
+Edita las variables CSS en `src/app/globals.css`:
+
+```css
+:root {
+  --bg: #0a0a0a;
+  --fg: #ededed;
+  --accent: #3b82f6;
+  /* ... */
+}
+```
+
+## 🤝 Contribuir
+
+1. Fork el proyecto
+2. Crea tu rama (`git checkout -b feature/nueva-caracteristica`)
+3. Commit cambios (`git commit -m 'Añadir nueva característica'`)
+4. Push (`git push origin feature/nueva-caracteristica`)
+5. Abre un Pull Request
 
 ## 📄 Licencia
 
-ISC
+MIT License - Siéntete libre de usar este proyecto para tu propio portfolio.
 
-## 👤 Autor
+## 👤 Autor Original
 
 **Felix Sánchez**
-- Email: felixsanchez73@outlook.com
 - LinkedIn: [felixrsanchez](https://www.linkedin.com/in/felixrsanchez/)
 - GitHub: [felix73sanchez](https://github.com/felix73sanchez)
+
+---
+
+⭐ Si te gusta el proyecto, ¡dale una estrella en GitHub!

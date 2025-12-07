@@ -30,7 +30,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
 
 # vercel
@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ===========================================
+# USER DATA - Not committed to repository
+# Each user creates their own when they run the project
+# ===========================================
+
+# Database (auto-created on first run)
+/data/*.db
+/data/*.db-shm
+/data/*.db-wal
+
+# User uploads (created when users upload images)
+/public/uploads/*
+!/public/uploads/.gitkeep
