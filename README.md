@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio FSX - Felix Sánchez
 
-## Getting Started
+Portfolio personal y blog construido con Next.js 16, TypeScript y SQLite.
 
-First, run the development server:
+## 🚀 Características
+
+### Portafolio
+- **Página principal** con información personal, experiencia y habilidades técnicas
+- **Página de proyectos** dinámica con administración desde panel admin
+- **Diseño responsivo** con tema oscuro por defecto y opción de tema claro
+- **Animaciones y efectos hover** para una experiencia premium
+
+### Blog
+- **Sistema de blog completo** con soporte para Markdown (GFM)
+- **Vista previa en tiempo real** al escribir artículos
+- **Barra de herramientas Markdown** para formateo rápido
+- **Etiquetas** para organizar contenido
+- **Imágenes de portada** con drag & drop
+- **Autores** con atribución automática
+
+### Panel de Administración
+- **Autenticación JWT** con código de invitación para registro
+- **Dashboard** con estadísticas de artículos
+- **CRUD completo** para artículos del blog
+- **CRUD completo** para proyectos del portafolio
+- **Subida de imágenes** a `/public/uploads/`
+
+## 🛠️ Tecnologías
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Estilos**: Tailwind CSS 4, CSS Variables
+- **Base de datos**: SQLite (better-sqlite3)
+- **Autenticación**: JWT (jsonwebtoken), bcryptjs
+- **Markdown**: react-markdown, remark-gfm
+
+## 📦 Instalación
 
 ```bash
+# Clonar el repositorio
+git clone https://github.com/felixsanchez/portfolio-fsx-nxt.git
+
+# Instalar dependencias
+npm install
+
+# Sembrar proyectos iniciales (opcional)
+npx tsx scripts/seed-projects.ts
+
+# Ejecutar en desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔧 Variables de Entorno
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Crear archivo `.env.local`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+JWT_SECRET=tu-clave-secreta-muy-segura
+INVITATION_CODE=tu-codigo-de-invitacion
+```
 
-## Learn More
+## 📁 Estructura del Proyecto
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/
+│   ├── admin/           # Panel de administración
+│   │   ├── dashboard/   # Dashboard principal
+│   │   ├── login/       # Login de admin
+│   │   ├── register/    # Registro con código de invitación
+│   │   ├── posts/       # CRUD de artículos
+│   │   └── projects/    # CRUD de proyectos
+│   ├── api/             # API Routes
+│   │   ├── auth/        # Login y registro
+│   │   ├── blog/        # CRUD de blog
+│   │   ├── projects/    # CRUD de proyectos
+│   │   └── upload/      # Subida de imágenes
+│   ├── blog/            # Páginas públicas del blog
+│   └── proyectos/       # Página pública de proyectos
+├── components/          # Componentes reutilizables
+│   ├── Header.tsx       # Header con navegación
+│   ├── Footer.tsx       # Footer
+│   ├── MarkdownRenderer.tsx  # Renderizador de Markdown
+│   └── ThemeContext.tsx # Contexto para tema claro/oscuro
+├── lib/
+│   ├── auth/            # Funciones de autenticación
+│   └── db/              # Funciones de base de datos
+└── types/               # Tipos TypeScript
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🔐 Acceso al Panel de Admin
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Ve a `/admin/register` y registra una cuenta con el código de invitación
+2. Inicia sesión en `/admin/login`
+3. Accede al dashboard en `/admin/dashboard`
 
-## Deploy on Vercel
+## 📝 Scripts Disponibles
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run dev       # Servidor de desarrollo
+npm run build     # Build de producción
+npm run start     # Servidor de producción
+npm run lint      # Linting con ESLint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🗄️ Base de Datos
+
+La base de datos SQLite se crea automáticamente en `data/portfolio.db` con las siguientes tablas:
+
+- **users**: Usuarios administradores
+- **blog_posts**: Artículos del blog
+- **projects**: Proyectos del portafolio
+
+## 📄 Licencia
+
+ISC
+
+## 👤 Autor
+
+**Felix Sánchez**
+- Email: felixsanchez73@outlook.com
+- LinkedIn: [felixrsanchez](https://www.linkedin.com/in/felixrsanchez/)
+- GitHub: [felix73sanchez](https://github.com/felix73sanchez)
