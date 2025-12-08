@@ -1,0 +1,16 @@
+services:
+  portfolio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portfolio-fsx
+    restart: always
+    ports:
+      - "7373:7373"
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET:-changeme_in_production_so_secure}
+      - INVITATION_CODE=${INVITATION_CODE:-admin123}
+    volumes:
+      - ./data:/app/data
+      - ./public/uploads:/app/public/uploads

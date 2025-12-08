@@ -76,6 +76,36 @@ Visita [http://localhost:3000](http://localhost:3000).
     npm run script:profile   # Carga perfil de ejemplo
     ```
 
+### 5. Despliegue con Docker 🐳
+
+El proyecto está completamente preparado para Docker.
+
+**Usando Docker Compose (Recomendado):**
+
+```bash
+# 1. Crea un archivo .env si no lo tienes (o edita docker-compose.yml directamente)
+# JWT_SECRET=...
+# INVITATION_CODE=...
+
+# 2. Levanta el contenedor
+docker-compose up -d --build
+```
+
+La aplicación estará disponible en `http://localhost:7373`. Los datos (base de datos SQLite e imágenes subidas) persistirán en las carpetas locales `./data` y `./public/uploads`.
+
+**Construcción Manual Segura:**
+
+```bash
+docker build -t portfolio-fsx .
+docker run -p 7373:3000 \
+  -v $(pwd)/data:/app/data \
+  -v $(pwd)/public/uploads:/app/public/uploads \
+  --user 1001:1001 \
+  -e JWT_SECRET=tu_secreto \
+  -e INVITATION_CODE=tu_codigo \
+  portfolio-fsx
+```
+
 ## 📁 Estructura del Proyecto
 
 ```
@@ -117,7 +147,7 @@ Todo el contenido es editable desde el **Panel de Administración**. No necesita
 Para cambios de **diseño visual** (colores, fuentes), edita `src/app/globals.css`:
 
 ```css
-:root {
+:root { 
   /* Paleta Dark Mode (Default) */
   --bg: #0a0a0a;
   --fg: #fafafa;
