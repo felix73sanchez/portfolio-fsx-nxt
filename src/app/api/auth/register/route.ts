@@ -70,11 +70,22 @@ export async function POST(request: NextRequest) {
             },
             token,
         });
-    } catch (error) {
-        console.error('Error en registro:', error);
+    } catch (error: any) {
+        console.error('Error detallado en registro:', error);
+
+        let errorMessage = 'Error interno del servidor';
+        if (error?.code === 'SQLITE_READONLY') {
+            errorMessage = 'Error de permisos: La base de datos es de solo lectura. Verifica los permisos de escritura en la carpeta data.';
+        } else if (error?.code === 'SQLITE_CANTOPEN') {
+            errorMessage = 'No se pudo abrir la base de datos. Verifica que la carpeta data exista y tenga permisos.';
+        } else if (error instanceof Error) {
+            errorMessage = error.message;
+        }
+
         return NextResponse.json(
-            { error: 'Error interno del servidor' },
+            { error: errorMessage },
             { status: 500 }
         );
     }
+
 }
