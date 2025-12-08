@@ -6,7 +6,7 @@ services:
     container_name: portfolio-fsx
     restart: always
     ports:
-      - "7373:7373"
+      - "7373:3000"
     environment:
       - NODE_ENV=production
       - JWT_SECRET=${JWT_SECRET:-changeme_in_production_so_secure}

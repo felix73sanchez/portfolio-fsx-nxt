@@ -39,7 +39,8 @@ export async function POST(request: NextRequest) {
         // Generar token
         const token = generateToken(user.id, user.email);
 
-        return NextResponse.json({
+        // Create response with token
+        const response = NextResponse.json({
             message: 'Inicio de sesión exitoso',
             user: {
                 id: user.id,
@@ -48,6 +49,17 @@ export async function POST(request: NextRequest) {
             },
             token,
         });
+
+        // Set HTTP-only cookie for middleware authentication
+        response.cookies.set('auth-token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7, // 7 days (matches JWT expiry)
+            path: '/',
+        });
+
+        return response;
     } catch (error) {
         console.error('Error en login:', error);
         return NextResponse.json(

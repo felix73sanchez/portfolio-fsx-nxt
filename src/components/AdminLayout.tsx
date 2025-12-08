@@ -19,14 +19,26 @@ export default function AdminLayout({ children, title, subtitle, actions }: Admi
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) router.push('/admin/login');
-        setUser({ name: 'Felix Sanchez' });
+        // User info is now managed via middleware - just get display name from localStorage
+        const storedUser = localStorage.getItem('userName');
+        setUser({ name: storedUser || 'Admin' });
 
         const handleScroll = () => setScrolled(window.scrollY > 10);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [router]);
+    }, []);
+
+    // Handle logout - clear cookie via API and localStorage
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+        localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+        router.push('/admin/login');
+    };
 
     useEffect(() => {
         if (sidebarOpen) document.body.style.overflow = 'hidden';
@@ -123,7 +135,7 @@ export default function AdminLayout({ children, title, subtitle, actions }: Admi
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium truncate">{user?.name}</p>
                             <button
-                                onClick={() => { localStorage.removeItem('token'); router.push('/admin/login'); }}
+                                onClick={handleLogout}
                                 className="text-xs text-[var(--gray)] hover:text-red-400 block mt-0.5"
                             >
                                 Cerrar Sesión
