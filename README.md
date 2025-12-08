@@ -106,24 +106,6 @@ docker run -p 7373:3000 \
   portfolio-fsx
 ```
 
-### Solución de Problemas (Troubleshooting)
-
-**Error 500 al registrarse (SQLITE_READONLY / SQLITE_CANTOPEN):**
-Esto ocurre por falta de permisos de escritura en la carpeta `data` cuando se usa Docker. El contenedor trata de escribir como usuario `1001` pero la carpeta en el host pertenece a `root`.
-
-**Solución:**
-Ejecuta esto en tu servidor:
-```bash
-chmod -R 777 data public/uploads
-# O si prefieres más seguridad:
-chown -R 1001:1001 data public/uploads
-```
-
-Luego reinicia el contenedor:
-```bash
-docker-compose restart
-```
-
 ## 📁 Estructura del Proyecto
 
 ```
