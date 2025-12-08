@@ -4,7 +4,30 @@ import { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/init';
 import { User, AuthToken } from '@/types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+// ============================================
+// SECURITY: JWT Secret Configuration
+// ============================================
+const isProduction = process.env.NODE_ENV === 'production';
+const rawSecret = process.env.JWT_SECRET;
+
+// In production, JWT_SECRET MUST be defined - no fallbacks allowed
+if (isProduction && !rawSecret) {
+  throw new Error(
+    '🔴 CRITICAL SECURITY ERROR: JWT_SECRET environment variable is not set.\n' +
+    'This is required in production to prevent token forgery attacks.\n' +
+    'Please set JWT_SECRET in your environment variables or .env file.'
+  );
+}
+
+// In development, allow fallback but warn loudly
+if (!isProduction && !rawSecret) {
+  console.warn(
+    '⚠️  WARNING: JWT_SECRET not set. Using insecure default for development only.\n' +
+    '   Set JWT_SECRET in .env.local before deploying to production!'
+  );
+}
+
+const JWT_SECRET: string = rawSecret || 'dev-only-insecure-secret-do-not-use-in-prod';
 const JWT_EXPIRY = '7d';
 
 export function hashPassword(password: string): string {
@@ -40,7 +63,7 @@ export async function getUserFromRequest(request: NextRequest): Promise<User | n
 
   const token = authHeader.slice(7);
   const decoded = verifyToken(token);
-  
+
   if (!decoded) {
     return null;
   }
