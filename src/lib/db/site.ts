@@ -14,6 +14,7 @@ export interface SiteConfig {
     phone: string;
     linkedin: string;
     github: string;
+    twitter: string;
 }
 
 const DEFAULT_CONFIG: SiteConfig = {
@@ -25,7 +26,8 @@ const DEFAULT_CONFIG: SiteConfig = {
     email: 'tu@email.com',
     phone: '+1234567890',
     linkedin: 'https://linkedin.com/in/tu-perfil',
-    github: 'https://github.com/tu-usuario'
+    github: 'https://github.com/tu-usuario',
+    twitter: 'https://x.com/tu-usuario'
 };
 
 export function getSiteConfig(): SiteConfig {

@@ -14,55 +14,48 @@ interface SiteConfig {
     phone: string;
     linkedin: string;
     github: string;
+    twitter: string;
 }
 
 export default function ProfileAdminPage() {
     const router = useRouter();
     const [config, setConfig] = useState<SiteConfig>({
         name: '', title: '', subtitle: '', location: '', about: '',
-        email: '', phone: '', linkedin: '', github: ''
+        email: '', phone: '', linkedin: '', github: '', twitter: ''
     });
-    const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-    // Password change state
-    const [passwordData, setPasswordData] = useState({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-    });
+    // Password state
+    const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
     const [changingPassword, setChangingPassword] = useState(false);
     const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) { router.push('/admin/login'); return; }
-        fetch('/api/site/config').then(r => r.json()).then(setConfig).catch(console.error).finally(() => setLoading(false));
-    }, [router]);
+        fetch('/api/site/config').then(r => r.json()).then(setConfig).catch(console.error);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
-        setSaveSuccess(false);
+        setMessage(null);
 
         try {
             const token = localStorage.getItem('token');
             const res = await fetch('/api/site/config', {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(config)
             });
 
             if (res.ok) {
-                setSaveSuccess(true);
-                setTimeout(() => setSaveSuccess(false), 3000);
+                setMessage({ type: 'success', text: 'Perfil actualizado correctamente' });
+                setTimeout(() => setMessage(null), 3000);
+            } else {
+                setMessage({ type: 'error', text: 'Error al guardar' });
             }
         } catch (error) {
-            console.error('Error saving config:', error);
+            setMessage({ type: 'error', text: 'Error de conexión' });
         } finally {
             setSaving(false);
         }
@@ -77,13 +70,9 @@ export default function ProfileAdminPage() {
             const token = localStorage.getItem('token');
             const res = await fetch('/api/auth/change-password', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(passwordData)
             });
-
             const data = await res.json();
 
             if (res.ok) {
@@ -93,160 +82,131 @@ export default function ProfileAdminPage() {
                 setPasswordMessage({ type: 'error', text: data.error });
             }
         } catch (error) {
-            setPasswordMessage({ type: 'error', text: 'Error al conectar con el servidor' });
+            setPasswordMessage({ type: 'error', text: 'Error de conexión' });
         } finally {
             setChangingPassword(false);
         }
     };
 
-    const inputClass = "w-full px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg)] text-sm focus:ring-1 focus:ring-[var(--fg)] focus:border-[var(--fg)] outline-none transition-all placeholder:text-[var(--gray)]/50";
-    const labelClass = "block text-xs font-medium text-[var(--gray)] mb-1.5 uppercase tracking-wide";
+    const inputClass = "w-full px-3 py-2 rounded-md bg-white/[0.03] border border-white/[0.08] text-[14px] placeholder:text-white/20 focus:border-white/20 focus:bg-white/[0.05] outline-none transition-all";
+    const labelClass = "block text-[12px] font-medium text-white/40 mb-1.5 uppercase tracking-wide";
+
+    const MessageBanner = ({ msg }: { msg: { type: 'success' | 'error', text: string } }) => (
+        <div className={`p-3 rounded-md text-[13px] font-medium flex items-center gap-2 mb-4 ${msg.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
+            }`}>
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={msg.type === 'success' ? 'M5 13l4 4L19 7' : 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'} />
+            </svg>
+            {msg.text}
+        </div>
+    );
 
     return (
         <AdminLayout
-            title="Profile Settings"
-            subtitle="Manage your public profile information"
+            title="Perfil"
             actions={
                 <button
                     onClick={handleSubmit}
                     disabled={saving}
-                    className="px-4 py-2 rounded-lg bg-[var(--fg)] text-[var(--bg)] text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                    className="px-4 py-1.5 rounded-md bg-white text-black text-[13px] font-medium hover:bg-white/90 disabled:opacity-50 transition-all"
                 >
-                    {saving ? 'Saving...' : 'Save Changes'}
+                    {saving ? 'Guardando...' : 'Guardar'}
                 </button>
             }
         >
-            {saveSuccess && (
-                <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-500 text-sm font-medium flex items-center gap-2 animate-fade-in-up">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                    Profile updated successfully
-                </div>
-            )}
+            {message && <MessageBanner msg={message} />}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Info */}
-                <div className="lg:col-span-2 space-y-8">
-                    <section className="space-y-4">
-                        <div className="pb-2 border-b border-[var(--border)]">
-                            <h3 className="text-lg font-medium">Personal Information</h3>
-                        </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Main Form */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Personal Info */}
+                    <section className="p-5 rounded-lg bg-white/[0.02] border border-white/[0.06]">
+                        <h3 className="text-[14px] font-semibold mb-4">Información Personal</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className={labelClass}>Full Name</label>
+                                <label className={labelClass}>Nombre</label>
                                 <input type="text" value={config.name} onChange={e => setConfig({ ...config, name: e.target.value })} className={inputClass} />
                             </div>
                             <div>
-                                <label className={labelClass}>Location</label>
+                                <label className={labelClass}>Ubicación</label>
                                 <input type="text" value={config.location} onChange={e => setConfig({ ...config, location: e.target.value })} className={inputClass} />
                             </div>
                             <div className="md:col-span-2">
-                                <label className={labelClass}>Professional Title</label>
+                                <label className={labelClass}>Título Profesional</label>
                                 <input type="text" value={config.title} onChange={e => setConfig({ ...config, title: e.target.value })} className={inputClass} />
                             </div>
                             <div className="md:col-span-2">
-                                <label className={labelClass}>Subtitle / Tagline</label>
+                                <label className={labelClass}>Subtítulo</label>
                                 <input type="text" value={config.subtitle} onChange={e => setConfig({ ...config, subtitle: e.target.value })} className={inputClass} />
                             </div>
                         </div>
                     </section>
 
-                    <section className="space-y-4">
-                        <div className="pb-2 border-b border-[var(--border)]">
-                            <h3 className="text-lg font-medium">About Me</h3>
-                        </div>
+                    {/* About */}
+                    <section className="p-5 rounded-lg bg-white/[0.02] border border-white/[0.06]">
+                        <h3 className="text-[14px] font-semibold mb-4">Sobre Mí</h3>
                         <textarea
                             value={config.about}
                             onChange={e => setConfig({ ...config, about: e.target.value })}
-                            rows={6}
-                            className={inputClass}
-                            style={{ resize: 'vertical', lineHeight: '1.6' }}
+                            rows={5}
+                            className={`${inputClass} resize-none`}
+                            placeholder="Escribe algo sobre ti..."
                         />
                     </section>
                 </div>
 
-                {/* Sidebar Info */}
-                <div className="space-y-8">
-                    <section className="space-y-4">
-                        <div className="pb-2 border-b border-[var(--border)]">
-                            <h3 className="text-lg font-medium">Contact & Social</h3>
-                        </div>
+                {/* Sidebar */}
+                <div className="space-y-6">
+                    {/* Contact */}
+                    <section className="p-5 rounded-lg bg-white/[0.02] border border-white/[0.06]">
+                        <h3 className="text-[14px] font-semibold mb-4">Contacto</h3>
                         <div className="space-y-4">
                             <div>
-                                <label className={labelClass}>Email Address</label>
+                                <label className={labelClass}>Email</label>
                                 <input type="email" value={config.email} onChange={e => setConfig({ ...config, email: e.target.value })} className={inputClass} />
                             </div>
                             <div>
-                                <label className={labelClass}>Phone Number</label>
+                                <label className={labelClass}>Teléfono</label>
                                 <input type="tel" value={config.phone} onChange={e => setConfig({ ...config, phone: e.target.value })} className={inputClass} />
                             </div>
                             <div>
-                                <label className={labelClass}>LinkedIn URL</label>
-                                <input type="url" value={config.linkedin} onChange={e => setConfig({ ...config, linkedin: e.target.value })} className={inputClass} />
+                                <label className={labelClass}>LinkedIn</label>
+                                <input type="url" value={config.linkedin} onChange={e => setConfig({ ...config, linkedin: e.target.value })} className={inputClass} placeholder="https://..." />
                             </div>
                             <div>
-                                <label className={labelClass}>GitHub URL</label>
-                                <input type="url" value={config.github} onChange={e => setConfig({ ...config, github: e.target.value })} className={inputClass} />
+                                <label className={labelClass}>GitHub</label>
+                                <input type="url" value={config.github} onChange={e => setConfig({ ...config, github: e.target.value })} className={inputClass} placeholder="https://..." />
+                            </div>
+                            <div>
+                                <label className={labelClass}>X (Twitter)</label>
+                                <input type="url" value={config.twitter} onChange={e => setConfig({ ...config, twitter: e.target.value })} className={inputClass} placeholder="https://x.com/..." />
                             </div>
                         </div>
                     </section>
 
-                    {/* Password Change Section */}
-                    <section className="space-y-4">
-                        <div className="pb-2 border-b border-[var(--border)]">
-                            <h3 className="text-lg font-medium">Cambiar Contraseña</h3>
-                        </div>
+                    {/* Password */}
+                    <section className="p-5 rounded-lg bg-white/[0.02] border border-white/[0.06]">
+                        <h3 className="text-[14px] font-semibold mb-4">Cambiar Contraseña</h3>
 
-                        {passwordMessage && (
-                            <div className={`p-3 rounded-lg text-sm font-medium flex items-center gap-2 ${passwordMessage.type === 'success'
-                                    ? 'bg-green-500/10 border border-green-500/20 text-green-500'
-                                    : 'bg-red-500/10 border border-red-500/20 text-red-500'
-                                }`}>
-                                {passwordMessage.type === 'success' ? (
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                ) : (
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                                )}
-                                {passwordMessage.text}
-                            </div>
-                        )}
+                        {passwordMessage && <MessageBanner msg={passwordMessage} />}
 
                         <form onSubmit={handlePasswordChange} className="space-y-4">
                             <div>
-                                <label className={labelClass}>Contraseña Actual</label>
-                                <input
-                                    type="password"
-                                    value={passwordData.currentPassword}
-                                    onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                                    className={inputClass}
-                                    required
-                                />
+                                <label className={labelClass}>Actual</label>
+                                <input type="password" value={passwordData.currentPassword} onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })} className={inputClass} required />
                             </div>
                             <div>
-                                <label className={labelClass}>Nueva Contraseña</label>
-                                <input
-                                    type="password"
-                                    value={passwordData.newPassword}
-                                    onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                                    className={inputClass}
-                                    minLength={6}
-                                    required
-                                />
-                                <p className="text-xs text-[var(--gray)] mt-1">Mínimo 6 caracteres</p>
+                                <label className={labelClass}>Nueva</label>
+                                <input type="password" value={passwordData.newPassword} onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })} className={inputClass} minLength={6} required />
                             </div>
                             <div>
-                                <label className={labelClass}>Confirmar Nueva Contraseña</label>
-                                <input
-                                    type="password"
-                                    value={passwordData.confirmPassword}
-                                    onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                                    className={inputClass}
-                                    required
-                                />
+                                <label className={labelClass}>Confirmar</label>
+                                <input type="password" value={passwordData.confirmPassword} onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} className={inputClass} required />
                             </div>
                             <button
                                 type="submit"
                                 disabled={changingPassword}
-                                className="w-full px-4 py-2.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                                className="w-full py-2 rounded-md bg-white/[0.05] border border-white/[0.1] text-[13px] font-medium hover:bg-white/10 disabled:opacity-50 transition-all"
                             >
                                 {changingPassword ? 'Cambiando...' : 'Cambiar Contraseña'}
                             </button>
