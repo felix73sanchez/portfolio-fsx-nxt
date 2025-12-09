@@ -1,12 +1,23 @@
 # Portfolio FSX - CMS Personal & Blog Open Source
 
-> Un portafolio profesional y sistema de gestión de contenidos (CMS) personal construido con tecnologías web modernas. Diseñado para desarrolladores que quieren un sitio personal elegante, rápido y totalmente autogestionable.
+> Un portafolio profesional y sistema de gestión de contenidos (CMS) personal construido con tecnologías web. Diseñado para desarrolladores que quieren un sitio personal elegante, rápido y totalmente autogestionable.
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 ![SQLite](https://img.shields.io/badge/SQLite-3-green)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-cyan)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
+![Tests](https://img.shields.io/badge/Tests-30%20passing-success)
+
+## 📚 Documentación
+
+| Documento | Descripción |
+|-----------|-------------|
+| [API Reference](./docs/API.md) | Todos los endpoints REST con ejemplos |
+| [Arquitectura](./docs/ARCHITECTURE.md) | Diseño técnico y esquema de BD |
+| [Self-Hosting](./docs/SELF-HOSTING.md) | Guía completa de despliegue |
+| [Contribuir](./docs/CONTRIBUTING.md) | Cómo contribuir al proyecto |
+
 
 ## ✨ Características Principales
 

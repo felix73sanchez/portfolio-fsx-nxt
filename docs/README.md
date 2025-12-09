@@ -1,19 +1,19 @@
-# 📚 Documentation
+# 📚 Documentación
 
-Welcome to the Portfolio FSX documentation. This directory contains detailed information about the project's architecture, API endpoints, and configuration.
+Bienvenido a la documentación de Portfolio FSX. Este directorio contiene información detallada sobre la arquitectura del proyecto, endpoints de la API y configuración.
 
-## Contents
+## Contenido
 
-- [API Reference](./API.md) - Complete API documentation with all endpoints
-- [Architecture](./ARCHITECTURE.md) - System architecture and design decisions
-- [Self-Hosting Guide](./SELF-HOSTING.md) - Complete guide to deploy your own instance
-- [Contributing](./CONTRIBUTING.md) - How to contribute to the project
+- [Referencia de API](./API.md) - Documentación completa de la API con todos los endpoints
+- [Arquitectura](./ARCHITECTURE.md) - Arquitectura del sistema y decisiones de diseño
+- [Guía de Self-Hosting](./SELF-HOSTING.md) - Guía completa para desplegar tu propia instancia
+- [Contribuir](./CONTRIBUTING.md) - Cómo contribuir al proyecto
 
-## Quick Links
+## Enlaces Rápidos
 
-| Document | Description |
-|----------|-------------|
-| [API.md](./API.md) | All REST API endpoints with examples |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Technical architecture overview |
-| [SELF-HOSTING.md](./SELF-HOSTING.md) | Deploy on your own server |
-| [CONTRIBUTING.md](./CONTRIBUTING.md) | Contribution guidelines |
+| Documento | Descripción |
+|-----------|-------------|
+| [API.md](./API.md) | Todos los endpoints REST con ejemplos |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Visión técnica de la arquitectura |
+| [SELF-HOSTING.md](./SELF-HOSTING.md) | Despliega en tu propio servidor |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | Guías para contribuir |
