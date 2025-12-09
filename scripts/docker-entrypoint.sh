@@ -10,17 +10,9 @@ mkdir -p /app/data
 mkdir -p /app/public/uploads
 
 # Cambiar el dueño de las carpetas al usuario nextjs (UID 1001)
-# Usamos chown directamente porque estamos corriendo como root
 chown -R nextjs:nodejs /app/data
 chown -R nextjs:nodejs /app/public/uploads
 
-# Ejecutar el comando pasado (la app) como el usuario nextjs usando gosu
+# Ejecutar el comando pasado (la app) como el usuario nextjs usando su-exec (Alpine)
 echo "Starting application as user nextjs..."
-# Si gosu está instalado, úsalo. Si no, intenta su-exec o fallback
-if command -v gosu > /dev/null; then
-    exec gosu nextjs "$@"
-else
-    # Fallback básico si no hay tools (aunque instalaremos gosu)
-    echo "Warning: gosu not found, running as root (not recommended)"
-    exec "$@"
-fi
+exec su-exec nextjs "$@"
