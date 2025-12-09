@@ -208,7 +208,7 @@ DOCKER_PASSWORD       # Token de Docker Hub
 AWS_HOST              # IP/hostname de tu EC2
 AWS_USERNAME          # Usuario SSH (ej: ubuntu)
 AWS_SSH_KEY           # Llave SSH privada
-PRODUCTION_URL        # URL de tu sitio (ej: https://tudominio.com)
+PRODUCTION_URL        # URL de tu sitio (ej: https://portfolio.fsxsys.org)
 ```
 
 ### Deploy Manual a AWS
