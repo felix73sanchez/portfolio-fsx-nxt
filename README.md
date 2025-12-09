@@ -155,12 +155,66 @@ Para cambios de **diseño visual** (colores, fuentes), edita `src/app/globals.cs
 }
 ```
 
+## 🧪 Testing
+
+El proyecto incluye una suite de tests completa para garantizar calidad de código:
+
+```bash
+# Ejecutar todos los tests
+npm test
+
+# Ejecutar tests con coverage
+npm run test:coverage
+
+# Ejecutar tests en modo watch
+npm run test:watch
+
+# Verificar tipos TypeScript
+npm run typecheck
+```
+
+### Suites de Tests
+- **Auth Tests**: Hashing de contraseñas, generación/verificación de JWT
+- **API Validation Tests**: Validación de email, password, códigos de invitación
+- **Component Tests**: Smoke tests de componentes React
+- **Utility Tests**: Formateo de fechas, generación de slugs, validaciones
+
+## 🔄 CI/CD
+
+El proyecto incluye un workflow de GitHub Actions para CI/CD automático:
+
+### Pipeline Stages
+1. **Lint & Type Check**: Valida código con ESLint y TypeScript
+2. **Tests**: Ejecuta suite completa de tests
+3. **Build**: Compila aplicación Next.js
+4. **Docker Build**: Construye imagen Docker optimizada
+5. **Deploy**: Despliega a AWS EC2 via SSH
+
+### Secrets Requeridos (GitHub)
+```
+DOCKER_USERNAME       # Usuario de Docker Hub
+DOCKER_PASSWORD       # Token de Docker Hub
+AWS_HOST              # IP/hostname de tu EC2
+AWS_USERNAME          # Usuario SSH (ej: ubuntu)
+AWS_SSH_KEY           # Llave SSH privada
+PRODUCTION_URL        # URL de tu sitio (ej: https://tudominio.com)
+```
+
+### Deploy Manual a AWS
+```bash
+ssh usuario@tu-servidor
+cd /app/portfolio
+./scripts/deploy.sh
+```
+
 ## 📝 Scripts
 
 - `npm run dev`: Servidor de desarrollo.
 - `npm run build`: Compila para producción.
 - `npm run start`: Inicia servidor de producción.
-- `npm run script:seed`: Crea tablas e inserta datos iniciales.
+- `npm test`: Ejecuta tests.
+- `npm run test:coverage`: Tests con reporte de coverage.
+- `npm run typecheck`: Verificación de tipos TypeScript.
 
 ## 🤝 Contribuir
 
