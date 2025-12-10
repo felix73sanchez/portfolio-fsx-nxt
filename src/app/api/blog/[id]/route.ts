@@ -70,10 +70,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         });
 
         return NextResponse.json(post);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error actualizando post:', error);
 
-        if (error.message === 'Post not found') {
+        if (error instanceof Error && error.message === 'Post not found') {
             return NextResponse.json(
                 { error: 'Post no encontrado' },
                 { status: 404 }

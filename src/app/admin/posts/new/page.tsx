@@ -58,7 +58,7 @@ export default function NewPostPage() {
         const data = await res.json();
         setError(data.error || 'Error al subir imagen');
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Error al subir la imagen');
     } finally {
       setUploading(false);
@@ -130,7 +130,7 @@ export default function NewPostPage() {
         const data = await res.json();
         setError(data.error || 'Error al crear artículo');
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Error al conectar con el servidor');
     } finally {
       setLoading(false);

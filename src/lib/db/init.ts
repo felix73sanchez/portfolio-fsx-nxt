@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
 
 let db: Database.Database | null = null;
 
@@ -9,8 +10,8 @@ export function getDb(): Database.Database {
     const dirPath = path.dirname(dbPath);
 
     // Crear directorio si no existe
-    if (!require('fs').existsSync(dirPath)) {
-      require('fs').mkdirSync(dirPath, { recursive: true });
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
     }
 
     db = new Database(dbPath);

@@ -9,7 +9,7 @@ export interface BlogPost {
   id: number;
   slug: string;
   title: string;
-  description: string;
+  description: string | null;
   content: string;
   coverImage?: string | null;
   tags: string[];

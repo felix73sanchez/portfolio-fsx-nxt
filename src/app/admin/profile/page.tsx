@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components';
 
 interface SiteConfig {
@@ -18,7 +17,6 @@ interface SiteConfig {
 }
 
 export default function ProfileAdminPage() {
-    const router = useRouter();
     const [config, setConfig] = useState<SiteConfig>({
         name: '', title: '', subtitle: '', location: '', about: '',
         email: '', phone: '', linkedin: '', github: '', twitter: ''

@@ -23,8 +23,8 @@ export default function BlogPostPage() {
         } else {
           setError(true);
         }
-      } catch (err) {
-        console.error('Error fetching post:', err);
+      } catch (_err) {
+        console.error('Error fetching post:', _err);
         setError(true);
       } finally {
         setLoading(false);

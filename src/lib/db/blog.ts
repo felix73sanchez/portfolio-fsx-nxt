@@ -1,6 +1,23 @@
 import { getDb } from '@/lib/db/init';
 import { BlogPost, CreateBlogPostInput, UpdateBlogPostInput } from '@/types';
 
+// Row type from SQLite query
+interface BlogPostRow {
+  id: number;
+  slug: string;
+  title: string;
+  description: string | null;
+  content: string;
+  coverImage: string | null;
+  tags: string;
+  published: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string | null;
+  authorId: number | null;
+  authorName: string | null;
+}
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -22,7 +39,7 @@ export function getAllPublishedPosts(): BlogPost[] {
       WHERE bp.published = 1 
       ORDER BY bp.publishedAt DESC
     `)
-    .all() as any[];
+    .all() as BlogPostRow[];
 
   return posts.map(parseBlogPost);
 }
@@ -38,7 +55,7 @@ export function getAllPosts(): BlogPost[] {
       LEFT JOIN users u ON bp.authorId = u.id
       ORDER BY bp.createdAt DESC
     `)
-    .all() as any[];
+    .all() as BlogPostRow[];
 
   return posts.map(parseBlogPost);
 }
@@ -54,7 +71,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
       LEFT JOIN users u ON bp.authorId = u.id
       WHERE bp.slug = ?
     `)
-    .get(slug) as any | undefined;
+    .get(slug) as BlogPostRow | undefined;
 
   return post ? parseBlogPost(post) : null;
 }
@@ -70,7 +87,7 @@ export function getPostById(id: number): BlogPost | null {
       LEFT JOIN users u ON bp.authorId = u.id
       WHERE bp.id = ?
     `)
-    .get(id) as any | undefined;
+    .get(id) as BlogPostRow | undefined;
 
   return post ? parseBlogPost(post) : null;
 }
@@ -116,7 +133,7 @@ export function updatePost(id: number, input: UpdateBlogPostInput): BlogPost {
     throw new Error('Post not found');
   }
 
-  const updates: Record<string, any> = {
+  const updates: Record<string, string | number | null> = {
     updatedAt: new Date().toISOString(),
   };
 
@@ -164,7 +181,7 @@ export function deletePost(id: number): boolean {
   return result.changes > 0;
 }
 
-function parseBlogPost(row: any): BlogPost {
+function parseBlogPost(row: BlogPostRow): BlogPost {
   return {
     ...row,
     tags: typeof row.tags === 'string' ? JSON.parse(row.tags) : row.tags || [],

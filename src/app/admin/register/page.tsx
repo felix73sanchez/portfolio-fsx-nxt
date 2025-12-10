@@ -51,7 +51,7 @@ export default function AdminRegisterPage() {
         const data = await res.json();
         setError(data.error || 'Error al registrar');
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Error al conectar con el servidor');
     } finally {
       setLoading(false);

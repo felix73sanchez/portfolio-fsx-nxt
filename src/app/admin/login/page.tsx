@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
         const data = await res.json();
         setError(data.error || 'Credenciales inválidas');
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Error al conectar con el servidor');
     } finally {
       setLoading(false);

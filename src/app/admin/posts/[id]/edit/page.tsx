@@ -48,7 +48,7 @@ export default function EditPostPage() {
         } else {
           setError('Artículo no encontrado');
         }
-      } catch (err) {
+      } catch (_err) {
         console.error('Error fetching post:', err);
         setError('Error al cargar el artículo');
       } finally {
@@ -176,7 +176,7 @@ export default function EditPostPage() {
         const data = await res.json();
         setError(data.error || 'Error al actualizar artículo');
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Error al conectar con el servidor');
     } finally {
       setSaving(false);

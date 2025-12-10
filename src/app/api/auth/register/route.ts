@@ -82,13 +82,14 @@ export async function POST(request: NextRequest) {
         });
 
         return response;
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error detallado en registro:', error);
 
         let errorMessage = 'Error interno del servidor';
-        if (error?.code === 'SQLITE_READONLY') {
+        const sqliteError = error as { code?: string };
+        if (sqliteError?.code === 'SQLITE_READONLY') {
             errorMessage = 'Error de permisos: La base de datos es de solo lectura. Verifica los permisos de escritura en la carpeta data.';
-        } else if (error?.code === 'SQLITE_CANTOPEN') {
+        } else if (sqliteError?.code === 'SQLITE_CANTOPEN') {
             errorMessage = 'No se pudo abrir la base de datos. Verifica que la carpeta data exista y tenga permisos.';
         } else if (error instanceof Error) {
             errorMessage = error.message;
