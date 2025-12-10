@@ -49,7 +49,7 @@ export default function EditPostPage() {
           setError('Artículo no encontrado');
         }
       } catch (_err) {
-        console.error('Error fetching post:', err);
+        console.error('Error fetching post:', _err);
         setError('Error al cargar el artículo');
       } finally {
         setLoading(false);
