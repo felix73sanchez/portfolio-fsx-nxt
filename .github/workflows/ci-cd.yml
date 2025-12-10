@@ -162,14 +162,13 @@ jobs:
             mkdir -p /app/portfolio/public/uploads
             cd /app/portfolio
             
-            # Create docker-compose.yml with the Docker Hub image
-            cat > docker-compose.yml << EOF
+            # Create docker-compose.yml with portfolio and Caddy
+            cat > docker-compose.yml << 'COMPOSE_EOF'
             version: '3.8'
+            
             services:
               portfolio:
-                image: ${DOCKER_USER}/portfolio-fsx:latest
-                ports:
-                  - "3000:3000"
+                image: DOCKER_USER_PLACEHOLDER/portfolio-fsx:latest
                 volumes:
                   - ./data:/app/data
                   - ./public/uploads:/app/public/uploads
@@ -178,7 +177,39 @@ jobs:
                 environment:
                   - NODE_ENV=production
                 restart: unless-stopped
-            EOF
+                networks:
+                  - web
+            
+              caddy:
+                image: caddy:2-alpine
+                ports:
+                  - "80:80"
+                  - "443:443"
+                volumes:
+                  - ./Caddyfile:/etc/caddy/Caddyfile
+                  - caddy_data:/data
+                depends_on:
+                  - portfolio
+                restart: unless-stopped
+                networks:
+                  - web
+            
+            volumes:
+              caddy_data:
+            
+            networks:
+              web:
+            COMPOSE_EOF
+            
+            # Replace placeholder with actual Docker username
+            sed -i "s|DOCKER_USER_PLACEHOLDER|${DOCKER_USER}|g" docker-compose.yml
+            
+            # Create Caddyfile
+            cat > Caddyfile << 'CADDY_EOF'
+            portfolio.fsxsys.org {
+                reverse_proxy portfolio:3000
+            }
+            CADDY_EOF
             
             # Create .env if not exists
             if [ ! -f .env ]; then
