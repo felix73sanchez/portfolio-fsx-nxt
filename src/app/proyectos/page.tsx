@@ -1,9 +1,24 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Header, Footer } from '@/components';
-import { Project } from '@/types';
+import { ensureDbReady } from '@/lib/db/ensure';
+import { getVisibleProjects } from '@/lib/db/projects';
+
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: 'Proyectos',
+  description:
+    'Algunos de mis trabajos personales y experimentos con tecnologías modernas.',
+  alternates: { canonical: '/proyectos' },
+  openGraph: {
+    title: 'Proyectos | Felix Sanchez',
+    description:
+      'Algunos de mis trabajos personales y experimentos con tecnologías modernas.',
+    type: 'website',
+    url: '/proyectos',
+  },
+};
 
 const getIcon = (icon?: string) => {
   switch (icon) {
@@ -48,26 +63,8 @@ const getIcon = (icon?: string) => {
 };
 
 export default function ProyectosPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await fetch('/api/projects');
-        if (res.ok) {
-          const data = await res.json();
-          setProjects(data);
-        }
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
+  ensureDbReady();
+  const projects = getVisibleProjects();
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
@@ -82,14 +79,7 @@ export default function ProyectosPage() {
           </p>
         </div>
 
-        {/* Loading State */}
-        {loading ? (
-          <div className="text-center py-16">
-            <div className="w-12 h-12 border-2 rounded-full animate-spin mx-auto mb-4"
-              style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }}></div>
-            <p style={{ color: 'var(--gray)' }}>Cargando proyectos...</p>
-          </div>
-        ) : projects.length === 0 ? (
+        {projects.length === 0 ? (
           <div className="text-center py-16 project-card">
             <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
               style={{ background: 'rgba(59, 130, 246, 0.1)' }}>

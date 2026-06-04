@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components";
+import { SITE_URL } from "@/lib/site-url";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,15 +15,27 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Felix Sanchez - Ingeniero de Software",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Felix Sanchez - Ingeniero de Software",
+    template: "%s | Felix Sanchez",
+  },
   description: "Desarrollador Full Stack especializado en Java, .NET, Node.js | Backend Developer | Santo Domingo, RD",
   keywords: ["Felix Sanchez", "Desarrollador", "Backend", "Java", ".NET", "Node.js", "Oracle", "Spring Boot"],
   authors: [{ name: "Felix Sanchez" }],
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Felix Sanchez - Ingeniero de Software",
     description: "Desarrollador Full Stack especializado en Java, .NET, Node.js",
     type: "website",
     locale: "es_DO",
+    url: SITE_URL,
+    siteName: "Felix Sanchez",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Felix Sanchez - Ingeniero de Software",
+    description: "Desarrollador Full Stack especializado en Java, .NET, Node.js",
   },
 };
 
