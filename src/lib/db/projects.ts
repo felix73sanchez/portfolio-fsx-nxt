@@ -7,6 +7,7 @@ interface DbProject {
     description: string;
     technologies: string;
     links: string | null;
+    coverImage: string | null;
     displayOrder: number;
     visible: number;
     createdAt: string;
@@ -20,6 +21,7 @@ function mapDbToProject(row: DbProject): Project {
         description: row.description,
         technologies: JSON.parse(row.technologies),
         links: row.links ? JSON.parse(row.links) : [],
+        coverImage: row.coverImage ?? null,
         displayOrder: row.displayOrder,
         visible: row.visible === 1,
         createdAt: row.createdAt,
@@ -66,13 +68,14 @@ export function createProject(input: CreateProjectInput): Project {
     const now = new Date().toISOString();
 
     const result = db.prepare(`
-    INSERT INTO projects (title, description, technologies, links, displayOrder, visible, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO projects (title, description, technologies, links, coverImage, displayOrder, visible, createdAt, updatedAt)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
         input.title,
         input.description,
         JSON.stringify(input.technologies),
         input.links ? JSON.stringify(input.links) : null,
+        input.coverImage || null,
         input.displayOrder ?? 0,
         input.visible !== false ? 1 : 0,
         now,
@@ -97,6 +100,7 @@ export function updateProject(id: number, input: UpdateProjectInput): Project | 
       description = ?,
       technologies = ?,
       links = ?,
+      coverImage = ?,
       displayOrder = ?,
       visible = ?,
       updatedAt = ?
@@ -106,6 +110,7 @@ export function updateProject(id: number, input: UpdateProjectInput): Project | 
         input.description ?? existing.description,
         JSON.stringify(input.technologies ?? existing.technologies),
         JSON.stringify(input.links ?? existing.links),
+        input.coverImage !== undefined ? (input.coverImage || null) : (existing.coverImage || null),
         input.displayOrder ?? existing.displayOrder,
         input.visible !== undefined ? (input.visible ? 1 : 0) : (existing.visible ? 1 : 0),
         now,

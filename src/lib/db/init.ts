@@ -68,12 +68,20 @@ export function initializeDatabase(): void {
       description TEXT NOT NULL,
       technologies TEXT NOT NULL,
       links TEXT,
+      coverImage TEXT,
       displayOrder INTEGER DEFAULT 0,
       visible INTEGER DEFAULT 1,
       createdAt TEXT NOT NULL,
       updatedAt TEXT NOT NULL
     )
   `);
+
+  // Agregar columna coverImage si no existe (migración)
+  try {
+    database.exec(`ALTER TABLE projects ADD COLUMN coverImage TEXT`);
+  } catch {
+    // La columna probablemente ya existe, ignorar el error
+  }
 
   // Crear tabla de configuración del sitio (perfil)
   database.exec(`

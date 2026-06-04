@@ -61,6 +61,7 @@ export interface Project {
   description: string;
   technologies: string[];
   links: ProjectLink[];
+  coverImage: string | null;
   displayOrder: number;
   visible: boolean;
   createdAt: string;
@@ -72,6 +73,7 @@ export interface CreateProjectInput {
   description: string;
   technologies: string[];
   links?: ProjectLink[];
+  coverImage?: string | null;
   displayOrder?: number;
   visible?: boolean;
 }
@@ -81,6 +83,7 @@ export interface UpdateProjectInput {
   description?: string;
   technologies?: string[];
   links?: ProjectLink[];
+  coverImage?: string | null;
   displayOrder?: number;
   visible?: boolean;
 }

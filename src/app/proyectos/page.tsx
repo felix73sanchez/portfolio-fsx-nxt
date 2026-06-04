@@ -94,25 +94,37 @@ export default function ProyectosPage() {
           </div>
         ) : (
           /* Projects Grid */
-          <div className="space-y-8 mb-16">
+          <div className="projects-grid mb-16">
             {projects.map((proyecto) => (
               <div key={proyecto.id} className="project-card">
+                {/* Media header: cover image or branded fallback */}
+                <div className="project-media">
+                  {proyecto.coverImage ? (
+                    <img
+                      src={proyecto.coverImage}
+                      alt={proyecto.title}
+                      className="project-media-img"
+                    />
+                  ) : (
+                    <div className="project-media-fallback" aria-hidden="true">
+                      <span>{proyecto.title.charAt(0).toUpperCase()}</span>
+                    </div>
+                  )}
+                </div>
+
                 {/* Title */}
-                <h2 className="text-xl md:text-2xl font-bold mb-4">{proyecto.title}</h2>
+                <h2 className="text-xl font-bold mb-3">{proyecto.title}</h2>
 
                 {/* Description */}
-                <p className="mb-6" style={{ color: 'var(--gray)', lineHeight: 1.7 }}>
+                <p className="mb-5" style={{ color: 'var(--gray)', lineHeight: 1.7 }}>
                   {proyecto.description}
                 </p>
 
                 {/* Technologies */}
-                <div style={{ marginBottom: '24px' }}>
+                <div style={{ marginBottom: '20px' }}>
                   <div className="flex flex-wrap" style={{ gap: '8px' }}>
                     {proyecto.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="tech-badge"
-                      >
+                      <span key={tech} className="tech-badge">
                         {tech}
                       </span>
                     ))}
@@ -122,11 +134,10 @@ export default function ProyectosPage() {
                 {/* Links */}
                 {proyecto.links && proyecto.links.length > 0 && (
                   <div
-                    className="flex flex-wrap"
+                    className="project-links flex flex-wrap"
                     style={{
                       gap: '12px',
                       paddingTop: '20px',
-                      marginTop: '8px',
                       borderTop: '1px solid var(--border)'
                     }}
                   >

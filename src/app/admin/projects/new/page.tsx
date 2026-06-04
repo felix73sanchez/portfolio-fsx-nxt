@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ProjectLink } from '@/types';
@@ -19,9 +19,39 @@ export default function NewProjectPage() {
     const [description, setDescription] = useState('');
     const [technologies, setTechnologies] = useState('');
     const [links, setLinks] = useState<ProjectLink[]>([]);
+    const [coverImage, setCoverImage] = useState('');
     const [visible, setVisible] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        setError('');
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const res = await fetch('/api/upload', { method: 'POST', body: formData });
+
+            if (res.ok) {
+                const data = await res.json();
+                setCoverImage(data.url);
+            } else {
+                const data = await res.json();
+                setError(data.error || 'Error al subir imagen');
+            }
+        } catch {
+            setError('Error al subir la imagen');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const addLink = () => {
         setLinks([...links, { label: '', url: '', icon: 'github' }]);
@@ -59,6 +89,7 @@ export default function NewProjectPage() {
                     description,
                     technologies: technologies.split(',').map(t => t.trim()).filter(Boolean),
                     links: links.filter(l => l.label && l.url),
+                    coverImage: coverImage || null,
                     visible
                 })
             });
@@ -156,6 +187,47 @@ export default function NewProjectPage() {
                             }}
                             placeholder="Describe tu proyecto, qué hace y qué tecnologías usaste..."
                         />
+                    </div>
+
+                    {/* Cover Image */}
+                    <div className="project-card">
+                        <label className="block text-sm font-medium mb-2">Imagen de portada</label>
+                        <p className="text-xs mb-3" style={{ color: 'var(--gray)' }}>
+                            Opcional. Si no subís una, la card muestra un fondo con la inicial del proyecto.
+                        </p>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/jpeg,image/png,image/gif,image/webp"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                        />
+                        {coverImage ? (
+                            <div className="space-y-3">
+                                <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)', aspectRatio: '16 / 9' }}>
+                                    <img src={coverImage} alt="Portada" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                                </div>
+                                <div className="flex gap-4">
+                                    <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                                        className="text-sm" style={{ color: 'var(--accent)' }}>
+                                        {uploading ? 'Subiendo...' : 'Cambiar imagen'}
+                                    </button>
+                                    <button type="button" onClick={() => setCoverImage('')}
+                                        className="text-sm" style={{ color: '#ef4444' }}>
+                                        Quitar
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                                className="w-full py-8 rounded-lg transition flex flex-col items-center gap-2 disabled:opacity-50"
+                                style={{ background: 'var(--light-gray)', border: '1px dashed var(--border)', color: 'var(--gray)' }}>
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span className="text-sm">{uploading ? 'Subiendo...' : 'Subir imagen de portada'}</span>
+                            </button>
+                        )}
                     </div>
 
                     {/* Technologies */}
