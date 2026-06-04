@@ -27,12 +27,16 @@ export default function Header() {
                         <span className="nav-number">01.</span>
                         <span>Inicio</span>
                     </Link>
-                    <Link href="/proyectos" className={`nav-link ${isActive('/proyectos') ? 'active' : ''}`}>
+                    <Link href="/sobre-mi" className={`nav-link ${isActive('/sobre-mi') ? 'active' : ''}`}>
                         <span className="nav-number">02.</span>
+                        <span>Sobre mí</span>
+                    </Link>
+                    <Link href="/proyectos" className={`nav-link ${isActive('/proyectos') ? 'active' : ''}`}>
+                        <span className="nav-number">03.</span>
                         <span>Proyectos</span>
                     </Link>
                     <Link href="/blog" className={`nav-link ${isActive('/blog') ? 'active' : ''}`}>
-                        <span className="nav-number">03.</span>
+                        <span className="nav-number">04.</span>
                         <span>Blog</span>
                     </Link>
 
