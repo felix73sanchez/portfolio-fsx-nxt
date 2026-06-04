@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MarkdownRenderer } from '@/components';
@@ -19,13 +19,6 @@ export default function NewPostPage() {
   const [error, setError] = useState('');
   const [preview, setPreview] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/admin/login');
-    }
-  }, [router]);
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -33,21 +26,12 @@ export default function NewPostPage() {
     setUploading(true);
     setError('');
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
-
     try {
       const formData = new FormData();
       formData.append('file', file);
 
       const res = await fetch('/api/upload', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
         body: formData
       });
 
@@ -101,18 +85,11 @@ export default function NewPostPage() {
 
     setLoading(true);
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
-
     try {
       const res = await fetch('/api/blog', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           title,

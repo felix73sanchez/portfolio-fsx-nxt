@@ -1,18 +1,16 @@
 import { NextResponse } from 'next/server';
 import { initializeDatabase } from '@/lib/db/init';
 import { getVisibleProjects, getAllProjects, createProject } from '@/lib/db/projects';
-import { verifyToken } from '@/lib/auth';
+import { getAuthFromCookies } from '@/lib/auth';
 import { CreateProjectInput } from '@/types';
 
 // Initialize database
 initializeDatabase();
 
 // GET - List projects (public: visible only, admin: all)
-export async function GET(request: Request) {
+export async function GET() {
     try {
-        const authHeader = request.headers.get('authorization');
-        const token = authHeader?.replace('Bearer ', '');
-        const user = token ? verifyToken(token) : null;
+        const user = await getAuthFromCookies();
 
         // If authenticated admin, return all projects
         if (user) {
@@ -31,16 +29,9 @@ export async function GET(request: Request) {
 // POST - Create project (admin only)
 export async function POST(request: Request) {
     try {
-        const authHeader = request.headers.get('authorization');
-        const token = authHeader?.replace('Bearer ', '');
-
-        if (!token) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        }
-
-        const user = verifyToken(token);
+        const user = await getAuthFromCookies();
         if (!user) {
-            return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
+            return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
         }
 
         const body: CreateProjectInput = await request.json();

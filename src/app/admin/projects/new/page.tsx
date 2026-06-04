@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ProjectLink } from '@/types';
@@ -22,13 +22,6 @@ export default function NewProjectPage() {
     const [visible, setVisible] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            router.push('/admin/login');
-        }
-    }, [router]);
 
     const addLink = () => {
         setLinks([...links, { label: '', url: '', icon: 'github' }]);
@@ -55,18 +48,11 @@ export default function NewProjectPage() {
 
         setLoading(true);
 
-        const token = localStorage.getItem('token');
-        if (!token) {
-            router.push('/admin/login');
-            return;
-        }
-
         try {
             const res = await fetch('/api/projects', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     title,

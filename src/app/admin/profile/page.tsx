@@ -39,10 +39,9 @@ export default function ProfileAdminPage() {
         setMessage(null);
 
         try {
-            const token = localStorage.getItem('token');
             const res = await fetch('/api/site/config', {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(config)
             });
 
@@ -65,10 +64,9 @@ export default function ProfileAdminPage() {
         setPasswordMessage(null);
 
         try {
-            const token = localStorage.getItem('token');
             const res = await fetch('/api/auth/change-password', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(passwordData)
             });
             const data = await res.json();

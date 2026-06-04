@@ -29,14 +29,8 @@ export default function EditProjectPage() {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            router.push('/admin/login');
-            return;
-        }
-
         fetchProject();
-    }, [projectId, router]);
+    }, [projectId]);
 
     const fetchProject = async () => {
         try {
@@ -84,18 +78,11 @@ export default function EditProjectPage() {
 
         setSaving(true);
 
-        const token = localStorage.getItem('token');
-        if (!token) {
-            router.push('/admin/login');
-            return;
-        }
-
         try {
             const res = await fetch(`/api/projects/${projectId}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     title,

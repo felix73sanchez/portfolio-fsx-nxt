@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components';
 
 interface Experience {
@@ -29,7 +28,6 @@ interface Education {
 type Tab = 'experiences' | 'education' | 'skills';
 
 export default function ContentAdminPage() {
-    const router = useRouter();
     const [activeTab, setActiveTab] = useState<Tab>('experiences');
     const [experiences, setExperiences] = useState<Experience[]>([]);
     const [education, setEducation] = useState<Education[]>([]);
@@ -50,10 +48,8 @@ export default function ContentAdminPage() {
     const [editingCategory, setEditingCategory] = useState<string | null>(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) { router.push('/admin/login'); return; }
         fetchData();
-    }, [router]);
+    }, []);
 
     const fetchData = async () => {
         try {
@@ -75,12 +71,11 @@ export default function ContentAdminPage() {
     // Experience handlers
     const handleExpSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
         const data = { ...expForm, responsibilities: expForm.responsibilities.split('\n').filter(r => r.trim()), displayOrder: 0 };
 
         const res = await fetch(editingExp ? `/api/site/experiences/${editingExp.id}` : '/api/site/experiences', {
             method: editingExp ? 'PUT' : 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
 
@@ -100,20 +95,18 @@ export default function ContentAdminPage() {
 
     const deleteExp = async (id: number) => {
         if (!confirm('¿Eliminar esta experiencia?')) return;
-        const token = localStorage.getItem('token');
-        const res = await fetch(`/api/site/experiences/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+        const res = await fetch(`/api/site/experiences/${id}`, { method: 'DELETE' });
         if (res.ok) fetchData();
     };
 
     // Education handlers
     const handleEduSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
         const data = { ...eduForm, startYear: parseInt(eduForm.startYear), endYear: eduForm.endYear ? parseInt(eduForm.endYear) : null, displayOrder: 0 };
 
         const res = await fetch(editingEdu ? `/api/site/education/${editingEdu.id}` : '/api/site/education', {
             method: editingEdu ? 'PUT' : 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
 
@@ -133,21 +126,19 @@ export default function ContentAdminPage() {
 
     const deleteEdu = async (id: number) => {
         if (!confirm('¿Eliminar esta educación?')) return;
-        const token = localStorage.getItem('token');
-        const res = await fetch(`/api/site/education/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+        const res = await fetch(`/api/site/education/${id}`, { method: 'DELETE' });
         if (res.ok) fetchData();
     };
 
     // Skills handlers
     const handleSkillsSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
         const category = editingCategory || skillCategory;
         const skillsArray = skillsList.split(',').map(s => s.trim()).filter(s => s);
 
         const res = await fetch('/api/site/skills', {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ category, skills: skillsArray })
         });
 
@@ -162,10 +153,9 @@ export default function ContentAdminPage() {
 
     const deleteSkillCategory = async (category: string) => {
         if (!confirm(`¿Eliminar "${category}"?`)) return;
-        const token = localStorage.getItem('token');
         await fetch('/api/site/skills', {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ category, skills: [] })
         });
         fetchData();

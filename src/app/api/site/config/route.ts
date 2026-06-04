@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { initializeDatabase } from '@/lib/db/init';
 import { getSiteConfig, updateSiteConfigBatch, SiteConfig } from '@/lib/db/site';
-import { verifyToken } from '@/lib/auth';
+import { getAuthFromCookies } from '@/lib/auth';
 
 // Initialize database
 initializeDatabase();
@@ -19,16 +19,8 @@ export async function GET() {
 // PUT - Update site config (admin only)
 export async function PUT(request: Request) {
     try {
-        const authHeader = request.headers.get('authorization');
-        const token = authHeader?.replace('Bearer ', '');
-
-        if (!token) {
+        if (!(await getAuthFromCookies())) {
             return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        }
-
-        const user = verifyToken(token);
-        if (!user) {
-            return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
         }
 
         const body: Partial<SiteConfig> = await request.json();

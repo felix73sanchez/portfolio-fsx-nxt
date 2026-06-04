@@ -27,12 +27,6 @@ export default function EditPostPage() {
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
-
     const fetchPost = async () => {
       try {
         const res = await fetch(`/api/blog/${postId}`);
@@ -57,7 +51,7 @@ export default function EditPostPage() {
     };
 
     fetchPost();
-  }, [postId, router]);
+  }, [postId]);
 
   // Track changes
   useEffect(() => {
@@ -80,21 +74,12 @@ export default function EditPostPage() {
     setUploading(true);
     setError('');
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
-
     try {
       const formData = new FormData();
       formData.append('file', file);
 
       const res = await fetch('/api/upload', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
         body: formData
       });
 
@@ -147,18 +132,11 @@ export default function EditPostPage() {
 
     setSaving(true);
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
-
     try {
       const res = await fetch(`/api/blog/${postId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           title,

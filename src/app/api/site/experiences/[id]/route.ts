@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getExperienceById, updateExperience, deleteExperience } from '@/lib/db/site';
-import { verifyToken } from '@/lib/auth';
+import { getAuthFromCookies } from '@/lib/auth';
 
 // GET - Get experience by ID
 export async function GET(
@@ -27,10 +27,7 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const authHeader = request.headers.get('authorization');
-        const token = authHeader?.replace('Bearer ', '');
-
-        if (!token || !verifyToken(token)) {
+        if (!(await getAuthFromCookies())) {
             return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
         }
 
@@ -51,14 +48,11 @@ export async function PUT(
 
 // DELETE - Delete experience (admin only)
 export async function DELETE(
-    request: Request,
+    _request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const authHeader = request.headers.get('authorization');
-        const token = authHeader?.replace('Bearer ', '');
-
-        if (!token || !verifyToken(token)) {
+        if (!(await getAuthFromCookies())) {
             return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
         }
 

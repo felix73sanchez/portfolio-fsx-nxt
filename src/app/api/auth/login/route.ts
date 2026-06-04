@@ -47,7 +47,6 @@ export async function POST(request: NextRequest) {
                 email: user.email,
                 name: user.name,
             },
-            token,
         });
 
         // Set HTTP-only cookie for middleware authentication

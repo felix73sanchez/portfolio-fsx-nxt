@@ -1,31 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Project } from '@/types';
 
 export default function ProjectsAdminPage() {
-    const router = useRouter();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<number | null>(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            router.push('/admin/login');
-            return;
-        }
+        fetchProjects();
+    }, []);
 
-        fetchProjects(token);
-    }, [router]);
-
-    const fetchProjects = async (token: string) => {
+    const fetchProjects = async () => {
         try {
-            const res = await fetch('/api/projects', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const res = await fetch('/api/projects');
             if (res.ok) {
                 const data = await res.json();
                 setProjects(data);
@@ -41,12 +31,10 @@ export default function ProjectsAdminPage() {
         if (!confirm('¿Estás seguro de eliminar este proyecto?')) return;
 
         setDeleting(id);
-        const token = localStorage.getItem('token');
 
         try {
             const res = await fetch(`/api/projects/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+                method: 'DELETE'
             });
 
             if (res.ok) {
@@ -60,14 +48,11 @@ export default function ProjectsAdminPage() {
     };
 
     const toggleVisibility = async (project: Project) => {
-        const token = localStorage.getItem('token');
-
         try {
             const res = await fetch(`/api/projects/${project.id}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ visible: !project.visible })
             });

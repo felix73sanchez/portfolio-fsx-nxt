@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { initializeDatabase } from '@/lib/db/init';
 import { getSkillsByCategory, updateSkillsForCategory } from '@/lib/db/site';
-import { verifyToken } from '@/lib/auth';
+import { getAuthFromCookies } from '@/lib/auth';
 
 initializeDatabase();
 
@@ -18,10 +18,7 @@ export async function GET() {
 // PUT - Update skills for a category (admin only)
 export async function PUT(request: Request) {
     try {
-        const authHeader = request.headers.get('authorization');
-        const token = authHeader?.replace('Bearer ', '');
-
-        if (!token || !verifyToken(token)) {
+        if (!(await getAuthFromCookies())) {
             return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
         }
 

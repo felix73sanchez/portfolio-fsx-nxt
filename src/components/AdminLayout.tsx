@@ -28,7 +28,6 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
         } catch (error) {
             console.error('Logout error:', error);
         }
-        localStorage.removeItem('token');
         localStorage.removeItem('userName');
         router.push('/admin/login');
     };

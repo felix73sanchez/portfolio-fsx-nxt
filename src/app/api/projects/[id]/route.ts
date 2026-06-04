@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getProjectById, updateProject, deleteProject } from '@/lib/db/projects';
-import { verifyToken } from '@/lib/auth';
+import { getAuthFromCookies } from '@/lib/auth';
 import { UpdateProjectInput } from '@/types';
 
 // GET - Get single project
@@ -28,16 +28,8 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const authHeader = request.headers.get('authorization');
-        const token = authHeader?.replace('Bearer ', '');
-
-        if (!token) {
+        if (!(await getAuthFromCookies())) {
             return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        }
-
-        const user = verifyToken(token);
-        if (!user) {
-            return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
         }
 
         const { id } = await params;
@@ -57,20 +49,12 @@ export async function PUT(
 
 // DELETE - Delete project (admin only)
 export async function DELETE(
-    request: Request,
+    _request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const authHeader = request.headers.get('authorization');
-        const token = authHeader?.replace('Bearer ', '');
-
-        if (!token) {
+        if (!(await getAuthFromCookies())) {
             return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        }
-
-        const user = verifyToken(token);
-        if (!user) {
-            return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
         }
 
         const { id } = await params;

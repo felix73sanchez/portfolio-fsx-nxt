@@ -1,6 +1,7 @@
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 import { getDb } from '@/lib/db/init';
 import { User, AuthToken } from '@/types';
 
@@ -56,19 +57,34 @@ export function verifyToken(token: string): AuthToken | null {
 }
 
 export async function getUserFromRequest(request: NextRequest): Promise<User | null> {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
+  // Auth is cookie-based: the browser automatically sends the httpOnly
+  // 'auth-token' cookie on same-origin requests. We no longer read the
+  // Authorization header, keeping a single source of truth with the middleware.
+  const token = request.cookies.get('auth-token')?.value;
+  if (!token) {
     return null;
   }
 
-  const token = authHeader.slice(7);
   const decoded = verifyToken(token);
-
   if (!decoded) {
     return null;
   }
 
   return getUserById(decoded.userId);
+}
+
+/**
+ * Reads and verifies the auth token from the httpOnly 'auth-token' cookie.
+ * Use in Route Handlers that receive a plain `Request` (no NextRequest),
+ * where `request.cookies` is not available.
+ */
+export async function getAuthFromCookies(): Promise<AuthToken | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('auth-token')?.value;
+  if (!token) {
+    return null;
+  }
+  return verifyToken(token);
 }
 
 export function createUser(email: string, password: string, name: string): User {
