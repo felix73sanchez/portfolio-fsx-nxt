@@ -19,30 +19,23 @@ function getInitialTheme(): Theme {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setTheme] = useState<Theme>('dark');
-    const [mounted, setMounted] = useState(false);
 
-    // Initialize theme on mount
+    // Read the persisted theme on the client. The server renders the default
+    // ('dark', already set as data-theme on <html>), so children are always
+    // server-rendered — never gate the tree behind a mounted flag or SSR/SEO breaks.
     useEffect(() => {
-        const initialTheme = getInitialTheme();
-        setTheme(initialTheme);
-        setMounted(true);
+        setTheme(getInitialTheme());
     }, []);
 
+    // Apply and persist the theme whenever it changes (client only).
     useEffect(() => {
-        if (mounted) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-        }
-    }, [theme, mounted]);
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    }, [theme]);
 
     const toggleTheme = useCallback(() => {
         setTheme(prev => prev === 'dark' ? 'light' : 'dark');
     }, []);
-
-    // Prevent flash of wrong theme
-    if (!mounted) {
-        return null;
-    }
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
