@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Header, Footer, MarkdownRenderer, ShareBar } from '@/components';
+import { Header, Footer, MarkdownRenderer, ShareBar, TableOfContents } from '@/components';
 import { ensureDbReady } from '@/lib/db/ensure';
 import { getAllPublishedPosts, getPostBySlug } from '@/lib/db/blog';
+import { extractToc } from '@/lib/toc';
 import { SITE_URL } from '@/lib/site-url';
 
 export const revalidate = 60;
@@ -41,13 +42,11 @@ export async function generateMetadata({
       publishedTime,
       authors: post.authorName ? [post.authorName] : undefined,
       tags: post.tags,
-      images: post.coverImage ? [{ url: post.coverImage }] : undefined,
     },
     twitter: {
-      card: post.coverImage ? 'summary_large_image' : 'summary',
+      card: 'summary_large_image',
       title: post.title,
       description: post.description || undefined,
-      images: post.coverImage ? [post.coverImage] : undefined,
     },
   };
 }
@@ -74,6 +73,21 @@ export default async function BlogPostPage({
   const wordCount = post.content.split(/\s+/).length;
   const readingTime = Math.max(1, Math.ceil(wordCount / 200));
   const url = `${SITE_URL}/blog/${post.slug}`;
+  const toc = extractToc(post.content);
+
+  // Related posts: published posts ranked by number of shared tags.
+  const related = getAllPublishedPosts()
+    .filter((p) => p.id !== post.id)
+    .map((p) => ({ post: p, shared: p.tags.filter((t) => post.tags.includes(t)).length }))
+    .filter((x) => x.shared > 0)
+    .sort(
+      (a, b) =>
+        b.shared - a.shared ||
+        new Date(b.post.publishedAt || b.post.createdAt).getTime() -
+          new Date(a.post.publishedAt || a.post.createdAt).getTime()
+    )
+    .slice(0, 3)
+    .map((x) => x.post);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -96,8 +110,9 @@ export default async function BlogPostPage({
       />
       <Header />
 
-      <article className="container" style={{ paddingTop: '6rem', paddingBottom: '4rem' }}>
-        <div className="max-w-3xl mx-auto">
+      <article style={{ paddingTop: '6rem', paddingBottom: '4rem' }}>
+        <div className="blog-layout">
+          <div className="blog-main">
 
           {/* Back link */}
           <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '40px', fontSize: '0.875rem', color: 'var(--accent)' }}>
@@ -170,6 +185,39 @@ export default async function BlogPostPage({
             <MarkdownRenderer content={post.content} />
           </div>
 
+          {/* Related posts */}
+          {related.length > 0 && (
+            <section style={{ marginBottom: '32px' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '20px' }}>
+                Artículos relacionados
+              </h2>
+              <div style={{ display: 'grid', gap: '16px' }}>
+                {related.map((rel) => (
+                  <Link
+                    key={rel.id}
+                    href={`/blog/${rel.slug}`}
+                    className="project-card"
+                    style={{ display: 'block' }}
+                  >
+                    {rel.tags.length > 0 && (
+                      <span style={{ fontSize: '0.7rem', fontWeight: 500, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        {rel.tags[0]}
+                      </span>
+                    )}
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 600, margin: '6px 0 4px' }}>
+                      {rel.title}
+                    </h3>
+                    {rel.description && (
+                      <p style={{ fontSize: '0.875rem', color: 'var(--gray)' }} className="line-clamp-2">
+                        {rel.description}
+                      </p>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Share Section */}
           <ShareBar url={url} title={post.title} />
 
@@ -182,6 +230,11 @@ export default async function BlogPostPage({
               Ver más artículos
             </Link>
           </div>
+          </div>
+
+          <aside className="blog-aside">
+            <TableOfContents items={toc} />
+          </aside>
         </div>
       </article>
 
