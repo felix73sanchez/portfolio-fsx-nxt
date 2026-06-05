@@ -3,6 +3,7 @@ import { Header, Footer } from '@/components';
 import { ensureDbReady } from '@/lib/db/ensure';
 import { getAllPublishedPosts } from '@/lib/db/blog';
 import { getSiteConfig } from '@/lib/db/site';
+import { getVisibleProjects } from '@/lib/db/projects';
 
 // Re-render at most once per minute so admin edits surface without a rebuild.
 export const revalidate = 60;
@@ -12,6 +13,7 @@ export default async function Home() {
 
   const profile = getSiteConfig();
   const recentPosts = getAllPublishedPosts().slice(0, 3);
+  const featuredProjects = getVisibleProjects().slice(0, 3);
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
@@ -88,6 +90,63 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* About teaser */}
+      {profile.about && (
+        <section className="section container">
+          <h2 className="section-title">Sobre mí</h2>
+          <p style={{ color: 'var(--gray)', lineHeight: 1.8 }} className="mb-6">
+            {profile.about}
+          </p>
+          <Link href="/sobre-mi" className="link-btn inline-flex items-center gap-2">
+            Conocer más
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </Link>
+        </section>
+      )}
+
+      {/* Featured projects */}
+      {featuredProjects.length > 0 && (
+        <section className="section container">
+          <h2 className="section-title">Proyectos destacados</h2>
+          <div className="projects-grid">
+            {featuredProjects.map(project => (
+              <div key={project.id} className="project-card">
+                <div className="project-media">
+                  {project.coverImage ? (
+                    <img src={project.coverImage} alt={project.title} className="project-media-img" />
+                  ) : (
+                    <div className="project-media-fallback" aria-hidden="true">
+                      <span>{project.title.charAt(0).toUpperCase()}</span>
+                    </div>
+                  )}
+                </div>
+                <h3 className="text-xl font-bold mb-3">{project.title}</h3>
+                <p className="mb-5" style={{ color: 'var(--gray)', lineHeight: 1.7 }}>
+                  {project.description}
+                </p>
+                {project.technologies.length > 0 && (
+                  <div className="flex flex-wrap" style={{ gap: '8px' }}>
+                    {project.technologies.slice(0, 5).map(tech => (
+                      <span key={tech} className="tech-badge">{tech}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/proyectos" className="link-btn inline-flex items-center gap-2">
+              Ver todos los proyectos
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* Recent Blog Posts */}
       {recentPosts.length > 0 && (
         <section className="section container">
@@ -114,18 +173,21 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Projects CTA */}
+      {/* Contact CTA */}
       <section className="section container text-center">
-        <h2 className="section-title">Proyectos</h2>
+        <h2 className="section-title">¿Trabajamos juntos?</h2>
         <p style={{ color: 'var(--gray)' }} className="mb-6">
-          Explora mis proyectos personales y experimentos con tecnologías modernas.
+          Estoy abierto a nuevos proyectos y oportunidades en desarrollo backend.
+          Escribime y conversamos.
         </p>
-        <Link href="/proyectos" className="cta-btn inline-flex items-center gap-2">
-          Ver Proyectos
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </Link>
+        {profile.email && (
+          <a href={`mailto:${profile.email}`} className="cta-btn inline-flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Contactame
+          </a>
+        )}
       </section>
 
       <Footer />
