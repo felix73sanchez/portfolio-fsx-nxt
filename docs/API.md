@@ -252,6 +252,7 @@ Obtiene todos los proyectos.
     "title": "Nombre del Proyecto",
     "description": "Descripción del proyecto",
     "technologies": ["React", "Node.js"],
+    "coverImage": "/uploads/cover.jpg",
     "links": [
       {"label": "GitHub", "url": "https://github.com/..."},
       {"label": "Demo", "url": "https://demo.com"}
@@ -278,6 +279,7 @@ Crea un nuevo proyecto.
   "title": "Nuevo Proyecto",
   "description": "Descripción aquí",
   "technologies": ["React", "TypeScript"],
+  "coverImage": "/uploads/cover.jpg",
   "links": [
     {"label": "GitHub", "url": "https://github.com/..."}
   ],
@@ -285,6 +287,9 @@ Crea un nuevo proyecto.
   "visible": true
 }
 ```
+
+> `coverImage` es opcional. Si se omite, las tarjetas de proyecto muestran un
+> fondo degradado con el monograma del título como respaldo.
 
 ---
 

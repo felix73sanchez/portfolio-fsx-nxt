@@ -7,7 +7,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3-green)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-cyan)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Tests](https://img.shields.io/badge/Tests-30%20passing-success)
+![Tests](https://img.shields.io/badge/Tests-35%20passing-success)
 
 ## 📚 Documentación
 
@@ -24,7 +24,16 @@
 ### 🎨 Frontend "Premium"
 - **Diseño Moderno**: Estética minimalista con soporte nativo para modo oscuro/claro y efectos glassmorphism.
 - **Totalmente Responsivo**: Se adapta perfectamente a móviles, tablets y escritorio.
-- **Rendimiento Máximo**: Renderizado estático y dinámico optimizado con Next.js App Router.
+- **Rendimiento Máximo**: Renderizado estático (SSG/ISR) optimizado con Next.js App Router; el contenido se prerenderiza en HTML para SEO real.
+- **Paleta de Comandos (⌘K / Ctrl+K)**: Navegación rápida entre páginas, cambio de tema y búsqueda de artículos del blog desde cualquier punto del sitio.
+- **Micro-interacciones**: Entrada del hero escalonada, revelado al hacer scroll (CSS puro con `view-timeline`) y anillos de foco accesibles, todo respetando `prefers-reduced-motion`.
+- **SEO Integral**: `metadata` por página, OpenGraph, JSON-LD, `sitemap.xml` y `robots.txt` generados automáticamente.
+
+### ✍️ Blog Avanzado
+- **Tabla de Contenidos** automática con anclas en los encabezados.
+- **Resaltado de Sintaxis** en bloques de código.
+- **Imagen OG Dinámica** generada por artículo.
+- **Artículos Relacionados** al final de cada post.
 
 ### ⚙️ Panel de Administración (CMS)
 ¡Olvídate de editar código para actualizar tu información!
@@ -124,13 +133,13 @@ docker run -p 7373:3000 \
 │   ├── app/
 │   │   ├── admin/           # Rutas del Panel de Administración (Protected)
 │   │   ├── api/             # API REST (Blog, Content, Profile, etc.)
-│   │   └── ...              # Páginas públicas (Home, Blog, Proyectos)
+│   │   └── ...              # Páginas públicas (Home, Sobre mí, Blog, Proyectos)
 │   ├── components/          # Componentes Reutilizables (UI Kit)
 │   ├── lib/
 │   │   ├── auth/            # Lógica de JWT y protección
 │   │   └── db/              # Inicialización y consultas SQLite
 │   └── types/               # Definiciones completas de TypeScript
-├── data/                    # Archivo de base de datos (ignorado por git)
+├── data/                    # Archivo de base de datos SQLite (versionado como seed inicial)
 ├── public/
 │   └── uploads/             # Almacenamiento local de imágenes
 └── scripts/                 # Scripts de utilidad (seeding, mantenimiento)
@@ -140,7 +149,7 @@ docker run -p 7373:3000 \
 
 | Tecnología | Propósito |
 |------------|-----------|
-| **Next.js 15 (App Router)** | Framework Fullstack React |
+| **Next.js 16 (App Router)** | Framework Fullstack React |
 | **React 19** | Biblioteca de UI |
 | **Tailwind CSS** | Estilizado Utility-First |
 | **SQLite (`better-sqlite3`)** | Base de datos SQL embebida de alto rendimiento |

@@ -45,7 +45,7 @@ portfolio-fsx-nxt/
 │   ├── components/          # Smoke tests de componentes
 │   ├── lib/                 # Tests unitarios de librerías
 │   └── utils/              # Tests de funciones utilitarias
-├── data/                    # Base de datos SQLite (ignorada por git)
+├── data/                    # Base de datos SQLite (versionada como seed inicial)
 │   └── portfolio.db
 ├── docs/                    # Documentación
 ├── public/
@@ -65,15 +65,20 @@ portfolio-fsx-nxt/
 │   │   │   ├── auth/       # Endpoints de autenticación
 │   │   │   ├── blog/       # CRUD del blog
 │   │   │   ├── projects/   # CRUD de proyectos
-│   │   │   ├── site/       # Config del sitio, experiencias, habilidades
+│   │   │   ├── site/       # Config, experiencias, habilidades, educación
 │   │   │   └── upload/     # Subida de archivos
 │   │   ├── blog/           # Páginas públicas del blog
-│   │   └── proyectos/      # Página pública de proyectos
+│   │   ├── proyectos/      # Página pública de proyectos
+│   │   └── sobre-mi/       # Página pública "Sobre mí" (bio, CV)
 │   ├── components/         # Componentes de UI reutilizables
 │   │   ├── AdminLayout.tsx
+│   │   ├── CommandPalette.tsx  # Paleta de comandos (⌘K)
 │   │   ├── Header.tsx
 │   │   ├── Footer.tsx
-│   │   └── ThemeProvider.tsx
+│   │   ├── MarkdownRenderer.tsx
+│   │   ├── ShareBar.tsx
+│   │   ├── TableOfContents.tsx
+│   │   └── ThemeContext.tsx    # Proveedor de tema (dark/light)
 │   ├── lib/
 │   │   ├── auth/           # JWT, hashing de contraseñas, funciones de usuario
 │   │   └── db/             # Inicialización y consultas SQLite
@@ -186,6 +191,7 @@ CREATE TABLE projects (
     description TEXT NOT NULL,
     technologies TEXT NOT NULL,  -- Array JSON
     links TEXT,                  -- Array JSON
+    coverImage TEXT,             -- Ruta a la imagen de portada (opcional)
     displayOrder INTEGER DEFAULT 0,
     visible INTEGER DEFAULT 1,
     createdAt TEXT NOT NULL,
