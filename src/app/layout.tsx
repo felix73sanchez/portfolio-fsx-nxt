@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components";
+import { ThemeProvider, CommandPalette } from "@/components";
 import { SITE_URL } from "@/lib/site-url";
+import { ensureDbReady } from "@/lib/db/ensure";
+import { getAllPublishedPosts } from "@/lib/db/blog";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +46,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  ensureDbReady();
+  const posts = getAllPublishedPosts().map((p) => ({
+    title: p.title,
+    slug: p.slug,
+  }));
+
   return (
     <html lang="es" data-theme="dark" suppressHydrationWarning>
       <head>
@@ -68,6 +76,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           {children}
+          <CommandPalette posts={posts} />
         </ThemeProvider>
       </body>
     </html>
