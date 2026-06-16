@@ -44,7 +44,7 @@ export default function AdminDashboardPage() {
   }, []);
 
   const statCards = [
-    { label: 'Posts', value: stats.posts, icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' },
+    { label: 'Artículos', value: stats.posts, icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' },
     { label: 'Proyectos', value: stats.projects, icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
     { label: 'Publicados', value: stats.published, icon: 'M5 13l4 4L19 7', color: 'text-emerald-400' },
     { label: 'Borradores', value: stats.drafts, icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', color: 'text-amber-400' },
@@ -57,7 +57,7 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <AdminLayout title="Dashboard">
+    <AdminLayout title="Panel Principal">
       <div className="space-y-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -103,7 +103,7 @@ export default function AdminDashboardPage() {
         {/* Recent Posts */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[13px] font-medium text-white/40 uppercase tracking-wide">Posts Recientes</h2>
+            <h2 className="text-[13px] font-medium text-white/40 uppercase tracking-wide">Artículos Recientes</h2>
             <Link href="/admin/posts/new" className="text-[12px] text-white/40 hover:text-white transition-colors">
               Ver todos →
             </Link>
@@ -114,7 +114,7 @@ export default function AdminDashboardPage() {
               <div className="p-8 text-center text-white/30 text-sm">Cargando...</div>
             ) : recentPosts.length === 0 ? (
               <div className="p-8 text-center">
-                <p className="text-white/30 text-sm mb-3">No hay posts todavía</p>
+                <p className="text-white/30 text-sm mb-3">No hay artículos todavía</p>
                 <Link
                   href="/admin/posts/new"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-white text-black text-[13px] font-medium hover:bg-white/90 transition-colors"
@@ -122,7 +122,7 @@ export default function AdminDashboardPage() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Crear primer post
+                  Crear primer artículo
                 </Link>
               </div>
             ) : (
