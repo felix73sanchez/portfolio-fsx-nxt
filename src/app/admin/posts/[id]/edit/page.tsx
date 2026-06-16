@@ -556,7 +556,7 @@ export default function EditPostPage() {
                   </div>
                 </>
               ) : (
-                <div className="relative group rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                <div className="relative rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
                   <img
                     src={coverImage}
                     alt="Imagen de portada"
@@ -567,7 +567,7 @@ export default function EditPostPage() {
                     }}
                   />
 
-                  <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                  <div className="flex items-center justify-center gap-3 p-3"
                     style={{ background: 'rgba(0,0,0,0.6)' }}>
                     <button
                       type="button"
@@ -591,14 +591,6 @@ export default function EditPostPage() {
                       </svg>
                       Eliminar
                     </button>
-                  </div>
-
-                  <div className="absolute bottom-2 left-2 px-2 py-1 rounded text-xs flex items-center gap-1"
-                    style={{ background: 'rgba(0,0,0,0.7)', color: '#fff' }}>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Imagen seleccionada
                   </div>
                 </div>
               )}

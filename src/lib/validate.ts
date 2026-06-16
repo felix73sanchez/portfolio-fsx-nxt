@@ -4,8 +4,8 @@ export function isString(value: unknown): value is string {
     return typeof value === 'string' && value.length > 0;
 }
 
-export function isOptionalString(value: unknown): value is string | undefined {
-    return value === undefined || typeof value === 'string';
+export function isOptionalString(value: unknown): value is (string | undefined | null) {
+    return value === undefined || value === null || typeof value === 'string';
 }
 
 export function isBoolean(value: unknown): value is boolean {
