@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Header, Footer, MarkdownRenderer, ShareBar, TableOfContents } from '@/components';
+import { Header, Footer, ShareBar, TableOfContents } from '@/components';
+import MarkdownRenderer from '@/components/MarkdownRendererDynamic';
 import { ensureDbReady } from '@/lib/db/ensure';
 import { getAllPublishedPosts, getPostBySlug } from '@/lib/db/blog';
 import { getSiteConfig } from '@/lib/db/site';
