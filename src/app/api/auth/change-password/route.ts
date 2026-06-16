@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, comparePasswords, hashPassword } from '@/lib/auth';
 import { getDb } from '@/lib/db/init';
+import { passwordRateLimiter } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
+    // Rate limiting
+    const rateLimitResponse = await passwordRateLimiter(request);
+    if (rateLimitResponse) return rateLimitResponse;
+
     try {
         // Verificar autenticación
         const user = await getUserFromRequest(request);

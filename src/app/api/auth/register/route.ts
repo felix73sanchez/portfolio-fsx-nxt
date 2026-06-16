@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createUser, getUserByEmail, generateToken } from '@/lib/auth';
 import { initializeDatabase } from '@/lib/db/init';
+import { registerRateLimiter } from '@/lib/rate-limit';
 
-// Código de invitación secreto - cámbialo a algo seguro
-const INVITATION_CODE = process.env.INVITATION_CODE || 'FSX1996TARGARYEN';
+// Código de invitación — DEBE estar en .env.local o variable de entorno
+const INVITATION_CODE = process.env.INVITATION_CODE;
 
 export async function POST(request: NextRequest) {
+    // Rate limiting
+    const rateLimitResponse = await registerRateLimiter(request);
+    if (rateLimitResponse) return rateLimitResponse;
+
     try {
         // Inicializar la base de datos
         initializeDatabase();

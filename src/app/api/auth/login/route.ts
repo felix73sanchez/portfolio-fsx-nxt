@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserByEmail, comparePasswords, generateToken } from '@/lib/auth';
 import { initializeDatabase } from '@/lib/db/init';
+import { authRateLimiter } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
+    // Rate limiting
+    const rateLimitResponse = await authRateLimiter(request);
+    if (rateLimitResponse) return rateLimitResponse;
+
     try {
         // Inicializar la base de datos
         initializeDatabase();
@@ -50,9 +55,11 @@ export async function POST(request: NextRequest) {
         });
 
         // Set HTTP-only cookie for middleware authentication
+        const isSecure = request.headers.get('x-forwarded-proto') === 'https'
+            || request.nextUrl.protocol === 'https:';
         response.cookies.set('auth-token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: isSecure,
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7, // 7 days (matches JWT expiry)
             path: '/',
