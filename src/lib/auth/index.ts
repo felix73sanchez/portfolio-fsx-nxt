@@ -121,3 +121,40 @@ export function getUserById(id: number): User | null {
 
   return user || null;
 }
+
+// ============================================
+// Password Reset Functions
+// ============================================
+
+export function setResetToken(email: string, token: string, expiry: string): boolean {
+  const db = getDb();
+  const result = db
+    .prepare('UPDATE users SET resetToken = ?, resetTokenExpiry = ? WHERE email = ?')
+    .run(token, expiry, email);
+  return result.changes > 0;
+}
+
+export function getUserByResetToken(token: string): { id: number; email: string } | null {
+  const db = getDb();
+  const row = db
+    .prepare(`SELECT id, email FROM users WHERE resetToken = ? AND resetTokenExpiry > datetime('now')`)
+    .get(token) as { id: number; email: string } | undefined;
+  return row || null;
+}
+
+export function updatePassword(userId: number, newPassword: string): boolean {
+  const db = getDb();
+  const hashed = hashPassword(newPassword);
+  const result = db
+    .prepare('UPDATE users SET password = ?, resetToken = NULL, resetTokenExpiry = NULL WHERE id = ?')
+    .run(hashed, userId);
+  return result.changes > 0;
+}
+
+export function clearResetToken(userId: number): boolean {
+  const db = getDb();
+  const result = db
+    .prepare('UPDATE users SET resetToken = NULL, resetTokenExpiry = NULL WHERE id = ?')
+    .run(userId);
+  return result.changes > 0;
+}

@@ -30,9 +30,23 @@ export function initializeDatabase(): void {
       email TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       name TEXT,
-      createdAt TEXT NOT NULL
+      createdAt TEXT NOT NULL,
+      resetToken TEXT,
+      resetTokenExpiry TEXT
     )
   `);
+
+  // Migración: agregar columnas de reset de contraseña si no existen
+  try {
+    database.exec(`ALTER TABLE users ADD COLUMN resetToken TEXT`);
+  } catch {
+    // ya existe
+  }
+  try {
+    database.exec(`ALTER TABLE users ADD COLUMN resetTokenExpiry TEXT`);
+  } catch {
+    // ya existe
+  }
 
   // Crear tabla de blog posts con campo de autor
   database.exec(`
