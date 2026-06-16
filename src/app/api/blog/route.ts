@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAllPublishedPosts, getAllPosts, createPost } from '@/lib/db/blog';
 import { getUserFromRequest } from '@/lib/auth';
 import { initializeDatabase } from '@/lib/db/init';
+import {
+    validateRequiredString,
+    validateOptionalString,
+    validateOptionalBoolean,
+    validateOptionalStringArray,
+} from '@/lib/validate';
 
 // GET: Obtener todos los posts (publicados para público, todos para admin)
 export async function GET(request: NextRequest) {
@@ -43,27 +49,41 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const body = await request.json();
+        const body: Record<string, unknown> = await request.json();
         const { title, description, content, coverImage, tags, published } = body;
 
-        // Validaciones
-        if (!title || !content) {
-            return NextResponse.json(
-                { error: 'Título y contenido son requeridos' },
-                { status: 400 }
-            );
-        }
+        // Validaciones de tipos
+        const titleErr = validateRequiredString(body, 'title');
+        if (titleErr) return NextResponse.json({ error: titleErr.message }, { status: 400 });
+
+        const contentErr = validateRequiredString(body, 'content');
+        if (contentErr) return NextResponse.json({ error: contentErr.message }, { status: 400 });
+
+        const tagsErr = validateOptionalStringArray(body, 'tags');
+        if (tagsErr) return NextResponse.json({ error: tagsErr.message }, { status: 400 });
+
+        const publishedErr = validateOptionalBoolean(body, 'published');
+        if (publishedErr) return NextResponse.json({ error: publishedErr.message }, { status: 400 });
+
+        const descErr = validateOptionalString(body, 'description');
+        if (descErr) return NextResponse.json({ error: descErr.message }, { status: 400 });
+
+        const coverErr = validateOptionalString(body, 'coverImage');
+        if (coverErr) return NextResponse.json({ error: coverErr.message }, { status: 400 });
+
+        // Validación pasó — narrowed types
+        const postInput = {
+            title: title as string,
+            description: (description as string | undefined) ?? '',
+            content: content as string,
+            coverImage: coverImage as string | undefined,
+            tags: (tags as string[] | undefined) ?? [],
+            published: (published as boolean | undefined) ?? false,
+            authorId: user.id,
+        };
 
         // Crear post con el ID del autor
-        const post = createPost({
-            title,
-            description: description || '',
-            content,
-            coverImage,
-            tags: tags || [],
-            published: published || false,
-            authorId: user.id,
-        });
+        const post = createPost(postInput);
 
         return NextResponse.json(post, { status: 201 });
     } catch (error) {
