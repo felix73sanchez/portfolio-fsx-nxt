@@ -55,3 +55,5 @@ next-env.d.ts
 # User uploads (created when users upload images)
 /public/uploads/*
 !/public/uploads/.gitkeep
+# Local AI runtime state
+.atl/
