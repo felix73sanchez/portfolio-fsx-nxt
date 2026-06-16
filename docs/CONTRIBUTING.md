@@ -128,7 +128,7 @@ feat: agregar funcionalidad de cambio de contraseña
 fix: resolver problema de redirección en login
 docs: actualizar documentación de API
 style: formatear código con prettier
-refactor: simplificar middleware de auth
+refactor: simplificar proxy de auth
 test: agregar tests unitarios para auth
 chore: actualizar dependencias
 ```

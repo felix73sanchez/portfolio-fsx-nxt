@@ -14,9 +14,9 @@ Visión técnica de la arquitectura de Portfolio FSX.
 │  │  (SSR/SSG)   │  │  (CSR)       │  │   (/api/*)          │  │
 │  └──────────────┘  └──────────────┘  └──────────────────────┘  │
 ├─────────────────────────────────────────────────────────────────┤
-│                      Capa de Middleware                          │
+│                      Capa de Proxy                            │
 │  ┌──────────────────────────────────────────────────────────┐  │
-│  │  Middleware de Autenticación (verificación JWT)          │  │
+│  │  Proxy de Autenticación (verificación JWT)               │  │
 │  └──────────────────────────────────────────────────────────┘  │
 ├─────────────────────────────────────────────────────────────────┤
 │                      Lógica de Negocio                           │
@@ -137,14 +137,14 @@ portfolio-fsx-nxt/
      │                     │  Generar JWT        │
      │                     │  Establecer cookie  │
      │                     │  HTTP-only          │
-     │  {token, user}      │                     │
+     │  {message, user}    │                     │
      │◄────────────────────│                     │
      │                     │                     │
      │  Petición a /admin/*│                     │
      │  (con cookie)       │                     │
      │────────────────────►│                     │
      │                     │                     │
-     │    Middleware:      │                     │
+     │    Proxy:           │                     │
      │    Verificar JWT    │                     │
      │    (librería jose)  │                     │
      │                     │                     │

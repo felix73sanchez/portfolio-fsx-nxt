@@ -37,16 +37,22 @@
 
 ### ⚙️ Panel de Administración (CMS)
 ¡Olvídate de editar código para actualizar tu información!
-- **Dashboard estilo "Bento Grid"**: Vista general de tu actividad con widgets interactivos y diseño moderno.
-- **Gestión de Perfil**: Edita tu nombre, título, bio, y redes sociales directamente desde el admin.
+- **Dashboard ejecutivo**: Stats en tiempo real, acciones rápidas y artículos recientes.
+- **Gestión de Perfil**: Edita tu nombre, título, bio, y redes sociales.
 - **Gestión de Contenido (CV)**: Añade, edita y reordena Experiencia Laboral, Educación y Habilidades.
 - **Gestión de Proyectos**: Portafolio completo con imágenes, tecnologías y enlaces.
-- **Sistema de Blog**: Editor Markdown con previsualización en vivo, subida de imágenes drag & drop y estados (borrador/publicado).
+- **Sistema de Blog**: Editor Markdown con toolbar, previsualización, subida drag & drop, y estados borrador/publicado.
+- **Layout unificado**: Navegación lateral con todas las secciones, soporte nativo para tema oscuro/claro.
 
 ### 🛡️ Seguridad y Arquitectura
-- **Autenticación**: Sistema JWT propio seguro sin dependencias externas pesadas.
-- **Base de Datos**: SQLite (vía `better-sqlite3`) para una portabilidad total sin necesidad de configurar servidores SQL externos.
-- **Privacidad**: Registro protegido mediante código de invitación.
+- **Autenticación JWT**: Sesión sin estado via cookie `httpOnly`, `secure`, `sameSite`.
+- **Content Security Policy**: Middleware genera nonce dinámico por request para scripts inline.
+- **Rate Limiting**: Protección contra fuerza bruta en login/register/cambio de contraseña y uploads.
+- **Validación de Uploads**: Detección real por magic bytes (no confía en Content-Type declarado), sanitización de filename.
+- **Security Headers**: `X-Content-Type-Options`, `X-Frame-Options`, `HSTS` (producción), `Referrer-Policy`, eliminación de `X-Powered-By`.
+- **Input Validation**: Tipado estricto en request bodies de API.
+- **SQLite seguro**: Todas las queries usan parameterized statements (sin riesgo de inyección).
+- **Privacidad**: Registro protegido mediante código de invitación (sin fallback hardcodeado).
 - **Clean Architecture**: Código modular y tipado estrictamente con TypeScript.
 
 ## 🚀 Inicio Rápido
@@ -92,8 +98,7 @@ Visita [http://localhost:3000](http://localhost:3000).
 3.  Accede al dashboard en `/admin`.
 4.  **(Opcional)** Puedes poblar datos de ejemplo ejecutando:
     ```bash
-    npm run script:seed      # Carga datos base
-    npm run script:profile   # Carga perfil de ejemplo
+    npx tsx scripts/seed-my-data.ts   # Carga datos de perfil de ejemplo
     ```
 
 ### 5. Despliegue con Docker 🐳
@@ -131,13 +136,17 @@ docker run -p 7373:3000 \
 ```
 ├── src/
 │   ├── app/
-│   │   ├── admin/           # Rutas del Panel de Administración (Protected)
-│   │   ├── api/             # API REST (Blog, Content, Profile, etc.)
+│   │   ├── admin/           # Panel de Administración (9 páginas, layout unificado)
+│   │   ├── api/             # API REST (Blog, Auth, Content, Projects, Upload)
+│   │   ├── not-found.tsx    # Página 404 personalizada
 │   │   └── ...              # Páginas públicas (Home, Sobre mí, Blog, Proyectos)
 │   ├── components/          # Componentes Reutilizables (UI Kit)
 │   ├── lib/
-│   │   ├── auth/            # Lógica de JWT y protección
-│   │   └── db/              # Inicialización y consultas SQLite
+│   │   ├── auth/            # Lógica de JWT y autenticación
+│   │   ├── db/              # Inicialización y consultas SQLite
+│   │   ├── rate-limit.ts    # Rate limiter in-memory con sliding window
+│   │   └── validate.ts      # Helper de validación de tipos para API
+│   ├── proxy.ts             # CSP + Security Headers + Auth proxy
 │   └── types/               # Definiciones completas de TypeScript
 ├── data/                    # Archivo de base de datos SQLite (versionado como seed inicial)
 ├── public/
@@ -151,10 +160,11 @@ docker run -p 7373:3000 \
 |------------|-----------|
 | **Next.js 16 (App Router)** | Framework Fullstack React |
 | **React 19** | Biblioteca de UI |
-| **Tailwind CSS** | Estilizado Utility-First |
+| **Tailwind CSS v4** | Estilizado Utility-First |
 | **SQLite (`better-sqlite3`)** | Base de datos SQL embebida de alto rendimiento |
-| **Jose / JWT** | Manejo de sesiones sin estado |
+| **JWT** | Manejo de sesiones sin estado + verificación en proxy |
 | **React Markdown** | Renderizado de contenido rico para el blog |
+| **Playwright** | Tests end-to-end para componentes interactivos |
 
 ## 🎨 Personalización
 
@@ -173,7 +183,14 @@ Para cambios de **diseño visual** (colores, fuentes), edita `src/app/globals.cs
   --fg: #fafafa;
   --accent: #3b82f6; /* Cambia este color para actualizar la marca */
 }
+/* Paleta Light Mode (automático con el toggle) */
+[data-theme="light"] {
+  --bg: #ffffff;
+  --fg: #0a0a0a;
+}
 ```
+
+> **Tip:** El administrador hereda automáticamente el tema claro/oscuro del sitio. No hay configuración separada.
 
 ## 🧪 Testing
 
@@ -198,6 +215,7 @@ npm run typecheck
 - **API Validation Tests**: Validación de email, password, códigos de invitación
 - **Component Tests**: Smoke tests de componentes React
 - **Utility Tests**: Formateo de fechas, generación de slugs, validaciones
+- **E2E Tests (Playwright)**: Theme toggle en 3 escenarios (fresh load, localStorage light, localStorage dark)
 
 ## 🔄 CI/CD
 

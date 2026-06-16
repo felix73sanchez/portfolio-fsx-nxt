@@ -5,19 +5,18 @@ Documentación completa de la API REST de Portfolio FSX.
 ## URL Base
 
 ```
-Desarrollo: http://localhost:3000/api
-Producción: https://tudominio.com/api
+Desarrollo: http://localhost:3000
+Producción: https://tudominio.com
 ```
 
 ## Autenticación
 
-La mayoría de los endpoints `POST`, `PUT` y `DELETE` requieren autenticación mediante token JWT.
+La autenticación es mediante cookie `httpOnly`. Al iniciar sesión o registrarse,
+el servidor establece automáticamente la cookie `auth-token` con un JWT firmado.
+El navegador la envía en cada petición a rutas protegidas (`/api/*`, `/admin/*`).
 
-### Headers
-```http
-Authorization: Bearer <tu-token-jwt>
-Content-Type: application/json
-```
+No es necesario enviar un header `Authorization` manualmente — la cookie se maneja
+de forma transparente en peticiones same-origin.
 
 ---
 
@@ -45,10 +44,10 @@ Registra un nuevo usuario administrador. Requiere código de invitación.
     "id": 1,
     "email": "juan@ejemplo.com",
     "name": "Juan Pérez"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
 }
 ```
+> El token JWT se establece automáticamente como cookie `httpOnly` (`auth-token`).
 
 **Errores:**
 - `400`: Campos faltantes o contraseña muy corta (mínimo 6 caracteres)
@@ -77,10 +76,10 @@ Autentica un usuario existente.
     "id": 1,
     "email": "juan@ejemplo.com",
     "name": "Juan Pérez"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
 }
 ```
+> El token JWT se establece automáticamente como cookie `httpOnly` (`auth-token`).
 
 **Errores:**
 - `400`: Email o contraseña faltantes
@@ -95,7 +94,7 @@ Cierra la sesión del usuario actual (limpia la cookie de autenticación).
 **Respuesta (200):**
 ```json
 {
-  "message": "Cierre de sesión exitoso"
+  "message": "Sesión cerrada exitosamente"
 }
 ```
 
@@ -105,7 +104,7 @@ Cierra la sesión del usuario actual (limpia la cookie de autenticación).
 
 Cambia la contraseña del usuario autenticado.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 **Cuerpo de la Petición:**
 ```json
@@ -136,8 +135,9 @@ Cambia la contraseña del usuario autenticado.
 
 Obtiene todos los posts del blog.
 
-**Parámetros de Query:**
-- `published` (opcional): Filtrar por estado de publicación (`true`/`false`)
+**Comportamiento:**
+- Usuario autenticado (admin): devuelve **todos** los posts (públicos y borradores).
+- Público anónimo: devuelve **solo los publicados**.
 
 **Respuesta (200):**
 ```json
@@ -185,7 +185,7 @@ Obtiene un post del blog por su slug.
 
 Crea un nuevo post del blog.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 **Cuerpo de la Petición:**
 ```json
@@ -215,7 +215,7 @@ Crea un nuevo post del blog.
 
 Actualiza un post existente del blog.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 **Cuerpo de la Petición:** Igual que POST (todos los campos opcionales)
 
@@ -227,7 +227,7 @@ Actualiza un post existente del blog.
 
 Elimina un post del blog.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 **Respuesta (200):**
 ```json
@@ -271,7 +271,7 @@ Obtiene todos los proyectos.
 
 Crea un nuevo proyecto.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 **Cuerpo de la Petición:**
 ```json
@@ -297,7 +297,7 @@ Crea un nuevo proyecto.
 
 Actualiza un proyecto.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 ---
 
@@ -305,7 +305,7 @@ Actualiza un proyecto.
 
 Elimina un proyecto.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 ---
 
@@ -337,7 +337,7 @@ Obtiene la configuración del sitio/perfil (público).
 
 Actualiza la configuración del sitio.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 **Cuerpo de la Petición:** Cualquier subconjunto de campos de configuración
 
@@ -375,7 +375,7 @@ Obtiene todas las experiencias laborales.
 
 Crea una nueva experiencia.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 ---
 
@@ -420,7 +420,7 @@ Obtiene todas las entradas de educación.
 
 Crea una entrada de educación.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 ---
 
@@ -457,7 +457,7 @@ Obtiene todas las habilidades agrupadas por categoría.
 
 Actualiza las habilidades de una categoría.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 **Cuerpo de la Petición:**
 ```json
@@ -475,7 +475,7 @@ Actualiza las habilidades de una categoría.
 
 Sube un archivo de imagen.
 
-**Headers:** Requiere `Authorization: Bearer <token>`
+> La autenticación se valida mediante la cookie `auth-token`.
 
 **Petición:** `multipart/form-data` con campo `file`
 
