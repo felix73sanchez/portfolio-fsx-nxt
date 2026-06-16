@@ -127,7 +127,7 @@ export default async function Home() {
                   {project.description}
                 </p>
                 {project.technologies.length > 0 && (
-                  <div className="flex flex-wrap" style={{ gap: '8px' }}>
+                  <div className="flex flex-wrap" style={{ gap: '0.75rem' }}>
                     {project.technologies.slice(0, 5).map(tech => (
                       <span key={tech} className="tech-badge">{tech}</span>
                     ))}
@@ -136,7 +136,7 @@ export default async function Home() {
               </div>
             ))}
           </div>
-          <div className="mt-8 text-center">
+          <div className="mt-12 text-center">
             <Link href="/proyectos" className="link-btn inline-flex items-center gap-2">
               Ver todos los proyectos
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -175,22 +175,22 @@ export default async function Home() {
 
       {/* Contact CTA */}
       <section className="section container text-center">
-        <h2 className="section-title">¿Trabajamos juntos?</h2>
-        <p style={{ color: 'var(--gray)' }} className="mb-6">
-          Estoy abierto a nuevos proyectos y oportunidades en desarrollo backend.
-          Escribime y conversamos.
+        <h2 className="section-title">Construyamos algo juntos</h2>
+        <p style={{ color: 'var(--gray)', maxWidth: '480px', margin: '0 auto' }} className="mb-6">
+          Siempre estoy interesado en desafíos de backend, colaboración open source
+          y construir sistemas que importan. Escríbeme.
         </p>
         {profile.email && (
           <a href={`mailto:${profile.email}`} className="cta-btn inline-flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            Contactame
+            Ponte en contacto
           </a>
         )}
       </section>
 
-      <Footer />
+      <Footer github={profile.github} linkedin={profile.linkedin} email={profile.email} />
     </main>
   );
 }

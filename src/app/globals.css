@@ -317,14 +317,96 @@ pre code {
 /* Footer Styles */
 .footer {
   margin-top: 6rem;
-  padding: 2rem 0;
+  padding: 3rem 0 1.5rem;
   border-top: 1px solid var(--border);
 }
 
-.footer p {
-  text-align: center;
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.footer-brand .logo {
+  margin-bottom: 0.5rem;
+  display: inline-flex;
+}
+
+.footer-tagline {
   color: var(--gray);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.footer-nav a {
+  color: var(--gray);
+  text-decoration: none;
   font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.footer-nav a:hover {
+  color: var(--accent);
+}
+
+.footer-socials {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.footer-socials a {
+  color: var(--gray);
+  transition: color 0.2s ease;
+}
+
+.footer-socials a:hover {
+  color: var(--accent);
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.footer-bottom p {
+  color: var(--gray);
+  font-size: 0.8rem;
+}
+
+.footer-oss a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-oss a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
 /* Project Card Styles */

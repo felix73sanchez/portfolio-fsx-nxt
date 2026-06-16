@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider, CommandPalette } from "@/components";
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -52,12 +53,17 @@ export default function RootLayout({
     slug: p.slug,
   }));
 
+  // Read CSP nonce from middleware header
+  const headersList = await headers();
+  const nonce = headersList.get('x-csp-nonce') || '';
+
   return (
     <html lang="es" data-theme="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        {/* Prevent flash of wrong theme */}
+        {/* Prevent flash of wrong theme - nonce allows this inline script via CSP */}
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               (function() {

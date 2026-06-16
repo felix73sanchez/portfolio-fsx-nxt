@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Header, Footer } from '@/components';
 import { ensureDbReady } from '@/lib/db/ensure';
 import { getAllPublishedPosts } from '@/lib/db/blog';
+import { getSiteConfig } from '@/lib/db/site';
 
 export const revalidate = 60;
 
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   ensureDbReady();
   const posts = getAllPublishedPosts();
+  const profile = getSiteConfig();
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
@@ -183,7 +185,7 @@ export default function BlogPage() {
         )}
       </div>
 
-      <Footer />
+      <Footer github={profile.github} linkedin={profile.linkedin} email={profile.email} />
     </main>
   );
 }

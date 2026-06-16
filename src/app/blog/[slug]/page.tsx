@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Header, Footer, MarkdownRenderer, ShareBar, TableOfContents } from '@/components';
 import { ensureDbReady } from '@/lib/db/ensure';
 import { getAllPublishedPosts, getPostBySlug } from '@/lib/db/blog';
+import { getSiteConfig } from '@/lib/db/site';
 import { extractToc } from '@/lib/toc';
 import { SITE_URL } from '@/lib/site-url';
 
@@ -59,6 +60,7 @@ export default async function BlogPostPage({
   const { slug } = await params;
   ensureDbReady();
   const post = getPostBySlug(slug);
+  const profile = getSiteConfig();
 
   if (!post || !post.published) {
     notFound();
@@ -238,7 +240,7 @@ export default async function BlogPostPage({
         </div>
       </article>
 
-      <Footer />
+      <Footer github={profile.github} linkedin={profile.linkedin} email={profile.email} />
     </main>
   );
 }

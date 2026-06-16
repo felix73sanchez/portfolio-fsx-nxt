@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Header, Footer } from '@/components';
 import { ensureDbReady } from '@/lib/db/ensure';
 import { getVisibleProjects } from '@/lib/db/projects';
+import { getSiteConfig } from '@/lib/db/site';
 
 export const revalidate = 60;
 
@@ -65,6 +66,7 @@ const getIcon = (icon?: string) => {
 export default function ProyectosPage() {
   ensureDbReady();
   const projects = getVisibleProjects();
+  const profile = getSiteConfig();
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
@@ -122,7 +124,7 @@ export default function ProyectosPage() {
 
                 {/* Technologies */}
                 <div style={{ marginBottom: '20px' }}>
-                  <div className="flex flex-wrap" style={{ gap: '8px' }}>
+                  <div className="flex flex-wrap" style={{ gap: '0.75rem' }}>
                     {proyecto.technologies.map((tech) => (
                       <span key={tech} className="tech-badge">
                         {tech}
@@ -171,7 +173,7 @@ export default function ProyectosPage() {
         </div>
       </div>
 
-      <Footer />
+      <Footer github={profile.github} linkedin={profile.linkedin} email={profile.email} />
     </main>
   );
 }

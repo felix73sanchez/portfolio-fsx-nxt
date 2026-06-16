@@ -136,7 +136,7 @@ export default function SobreMiPage() {
         </section>
       )}
 
-      <Footer />
+      <Footer github={profile.github} linkedin={profile.linkedin} email={profile.email} />
     </main>
   );
 }
