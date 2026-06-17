@@ -67,9 +67,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Determinar rol: el primer usuario registrado es owner, los siguientes editor
-        const userCount = (getDb().prepare('SELECT COUNT(*) as count FROM users').get() as { count: number }).count;
-        const role = userCount === 0 ? 'owner' : 'editor';
+        // El primer usuario en registrarse es owner, los siguientes editor
+        const ownerCount = (getDb().prepare('SELECT COUNT(*) as count FROM users WHERE role = ?').get('owner') as { count: number }).count;
+        const role = ownerCount === 0 ? 'owner' : 'editor';
 
         // Crear el usuario
         const user = createUser(email, password, name, role);
