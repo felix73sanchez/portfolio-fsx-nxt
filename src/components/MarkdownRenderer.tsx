@@ -199,7 +199,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
                             style={{
                                 border: 'none',
                                 height: '1px',
-                                background: 'rgba(255, 255, 255, 0.05)',
+                                background: 'var(--border)',
                                 margin: '2.5rem 0'
                             }}
                         />

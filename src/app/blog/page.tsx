@@ -152,7 +152,7 @@ export default function BlogPage() {
 
         {/* Newsletter CTA */}
         {posts.length > 0 && (
-          <div className="project-card text-center mt-12" style={{ background: 'var(--light-gray)' }}>
+          <div className="project-card text-center mt-12">
             <h3 className="text-xl font-bold mb-2">¿Te interesa el contenido?</h3>
             <p style={{ color: 'var(--gray)' }} className="mb-4">
               Sígueme en mis redes para más artículos y tips de desarrollo.

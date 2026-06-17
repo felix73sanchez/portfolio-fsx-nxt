@@ -92,9 +92,9 @@ export default async function Home() {
 
       {/* About teaser */}
       {profile.about && (
-        <section className="section container">
+        <section className="section container" >
           <h2 className="section-title">Sobre mí</h2>
-          <p style={{ color: 'var(--gray)', lineHeight: 1.8 }} className="mb-6">
+          <p style={{ color: 'var(--gray)', lineHeight: 1.8, marginBottom: '2rem' }} className="mb-6">
             {profile.about}
           </p>
           <Link href="/sobre-mi" className="link-btn inline-flex items-center gap-2">
@@ -110,7 +110,7 @@ export default async function Home() {
       {featuredProjects.length > 0 && (
         <section className="section container">
           <h2 className="section-title">Proyectos destacados</h2>
-          <div className="projects-grid">
+          <div className="projects-grid" style={{ marginBottom: '1rem' }}>
             {featuredProjects.map(project => (
               <div key={project.id} className="project-card">
                 <div className="project-media">
@@ -136,7 +136,7 @@ export default async function Home() {
               </div>
             ))}
           </div>
-          <div className="mt-12 text-center">
+          <div className="mt-16 text-center">
             <Link href="/proyectos" className="link-btn inline-flex items-center gap-2">
               Ver todos los proyectos
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -147,48 +147,47 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Recent Blog Posts */}
-      {recentPosts.length > 0 && (
-        <section className="section container">
-          <h2 className="section-title">Últimos Artículos</h2>
-          <div className="space-y-6">
-            {recentPosts.map(post => (
-              <Link key={post.id} href={`/blog/${post.slug}`} className="block project-card transition hover:border-[var(--accent)]">
-                <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
-                <p style={{ color: 'var(--gray)' }} className="text-sm mb-2">{post.description}</p>
-                <span style={{ color: 'var(--accent)' }} className="text-sm">
-                  {new Date(post.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </span>
-              </Link>
-            ))}
-          </div>
-          <div className="mt-6 text-center">
-            <Link href="/blog" className="link-btn inline-flex items-center gap-2">
-              Ver todos los artículos
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </Link>
-          </div>
-        </section>
-      )}
-
-      {/* Contact CTA */}
-      <section className="section container text-center">
-        <h2 className="section-title">Construyamos algo juntos</h2>
-        <p style={{ color: 'var(--gray)', maxWidth: '480px', margin: '0 auto' }} className="mb-6">
-          Siempre estoy interesado en desafíos de backend, colaboración open source
-          y construir sistemas que importan. Escríbeme.
-        </p>
-        {profile.email && (
-          <a href={`mailto:${profile.email}`} className="cta-btn inline-flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            Ponte en contacto
-          </a>
-        )}
-      </section>
+{/* Recent Blog Posts */}
+{recentPosts.length > 0 && (
+  <section className="section container">
+    <h2 className="section-title">Últimos Artículos</h2>
+    <div className="space-y-6" style={{ marginBottom: '1rem' }}>
+      {recentPosts.map(post => (
+        <Link key={post.id} href={`/blog/${post.slug}`} className="block project-card transition hover:border-[var(--accent)]">
+          <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
+          <p style={{ color: 'var(--gray)' }} className="text-sm mb-2">{post.description}</p>
+          <span style={{ color: 'var(--accent)' }} className="text-sm">
+            {new Date(post.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </span>
+        </Link>
+      ))}
+    </div>
+    <div className="text-center">
+      <Link href="/blog" className="link-btn inline-flex items-center gap-2">
+        Ver todos los artículos
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+        </svg>
+      </Link>
+    </div>
+  </section>
+)}
+{/* Contact CTA */}
+<section className="section container text-center">
+  <h2 className="section-title">Construyamos algo juntos</h2>
+  <p style={{ color: 'var(--gray)', maxWidth: '480px', margin: '0 auto', marginBottom: '2rem' }}>
+    Siempre estoy interesado en desafíos de backend, colaboración open source
+    y construir sistemas que importan. Escríbeme.
+  </p>
+  {profile.email && (
+    <a href={`mailto:${profile.email}`} className="cta-btn inline-flex items-center gap-2">
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+      Ponte en contacto
+    </a>
+  )}
+</section>
 
       <Footer github={profile.github} linkedin={profile.linkedin} email={profile.email} />
     </main>

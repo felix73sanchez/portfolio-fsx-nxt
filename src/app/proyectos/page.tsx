@@ -163,7 +163,7 @@ export default function ProyectosPage() {
         )}
 
         {/* Back to home */}
-        <div className="text-center pt-8" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="text-center" style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
           <Link href="/" className="link-btn inline-flex">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

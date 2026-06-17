@@ -44,112 +44,108 @@ export default function AdminDashboardPage() {
   }, []);
 
   const statCards = [
-    { label: 'Artículos', value: stats.posts, icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' },
-    { label: 'Proyectos', value: stats.projects, icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
-    { label: 'Publicados', value: stats.published, icon: 'M5 13l4 4L19 7', color: 'text-emerald-400' },
-    { label: 'Borradores', value: stats.drafts, icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', color: 'text-amber-400' },
+    { label: 'Total Posts', value: stats.posts, icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' },
+    { label: 'Projects', value: stats.projects, icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' },
+    { label: 'Published', value: stats.published, icon: 'M5 13l4 4L19 7' },
+    { label: 'Drafts', value: stats.drafts, icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
   ];
 
   const quickActions = [
-    { label: 'Nuevo Post', href: '/admin/posts/new', icon: 'M12 4v16m8-8H4' },
-    { label: 'Nuevo Proyecto', href: '/admin/projects', icon: 'M12 6v6m0 0v6m0-6h6m-6 0H6' },
-    { label: 'Editar Perfil', href: '/admin/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
+    { label: 'New Post', desc: 'Write a blog article', href: '/admin/posts/new', icon: 'M12 4v16m8-8H4' },
+    { label: 'New Project', desc: 'Add a project', href: '/admin/projects/new', icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' },
+    { label: 'Edit Profile', desc: 'Update your info', href: '/admin/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
   ];
 
+  if (loading) {
+    return (
+      <AdminLayout title="Dashboard">
+        <div className="content-loading">
+          <div className="content-spinner" />
+        </div>
+      </AdminLayout>
+    );
+  }
+
   return (
-    <AdminLayout title="Panel Principal">
-      <div className="space-y-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {statCards.map((stat) => (
-            <div
-              key={stat.label}
-              className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12] transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-md bg-white/[0.05] ${stat.color || 'text-white/60'}`}>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
-                  </svg>
+    <AdminLayout title="Dashboard">
+      {/* Stats */}
+      <div className="dashboard-stats">
+        {statCards.map((stat) => (
+          <div key={stat.label} className="stat-card">
+            <div className="stat-card-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
+              </svg>
+            </div>
+            <div className="stat-card-info">
+              <span className="stat-card-value">{stat.value}</span>
+              <span className="stat-card-label">{stat.label}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Quick Actions */}
+      <h3 className="dashboard-section-title">Quick Actions</h3>
+      <div className="dashboard-actions">
+        {quickActions.map((action) => (
+          <Link key={action.href} href={action.href} className="action-card">
+            <div className="action-card-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={action.icon} />
+              </svg>
+            </div>
+            <div>
+              <div className="action-card-text">{action.label}</div>
+              <div className="action-card-desc">{action.desc}</div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Recent Posts */}
+      <div className="content-header">
+        <h3 className="dashboard-section-title" style={{ marginBottom: 0 }}>Recent Posts</h3>
+        <Link href="/admin/posts" className="admin-btn admin-btn-sm">View all →</Link>
+      </div>
+
+      {recentPosts.length === 0 ? (
+        <div className="content-empty">
+          <div className="content-empty-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="32" height="32">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            </svg>
+          </div>
+          <p className="content-empty-title">No posts yet</p>
+          <p className="content-empty-text">Write your first blog article</p>
+          <Link href="/admin/posts/new" className="admin-btn admin-btn-primary" style={{ marginTop: '1rem' }}>
+            Create First Post
+          </Link>
+        </div>
+      ) : (
+        <div className="admin-card-list">
+          {recentPosts.map((post) => (
+            <Link key={post.id} href={`/admin/posts/${post.id}/edit`} className="admin-card" style={{ textDecoration: 'none', display: 'block' }}>
+              <div className="admin-card-header">
+                <div style={{ minWidth: 0 }}>
+                  <div className="admin-card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span className={`content-badge ${post.published ? 'published' : 'draft'}`}>
+                      {post.published ? 'Published' : 'Draft'}
+                    </span>
+                    {post.title}
+                  </div>
+                  {post.description && (
+                    <div className="admin-card-subtitle" style={{ marginTop: '0.25rem' }}>{post.description}</div>
+                  )}
                 </div>
-                <div>
-                  <p className="text-2xl font-semibold">{loading ? '—' : stat.value}</p>
-                  <p className="text-[11px] text-white/40 uppercase tracking-wide">{stat.label}</p>
+                <div className="admin-card-meta" style={{ whiteSpace: 'nowrap' }}>
+                  {new Date(post.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
-
-        {/* Quick Actions */}
-        <div>
-          <h2 className="text-[13px] font-medium text-white/40 uppercase tracking-wide mb-3">Acciones Rápidas</h2>
-          <div className="flex flex-wrap gap-2">
-            {quickActions.map((action) => (
-              <Link
-                key={action.href}
-                href={action.href}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-white/[0.05] border border-white/[0.08] text-[13px] font-medium hover:bg-white/10 hover:border-white/[0.15] transition-all"
-              >
-                <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={action.icon} />
-                </svg>
-                {action.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Recent Posts */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[13px] font-medium text-white/40 uppercase tracking-wide">Artículos Recientes</h2>
-            <Link href="/admin/posts/new" className="text-[12px] text-white/40 hover:text-white transition-colors">
-              Ver todos →
-            </Link>
-          </div>
-
-          <div className="rounded-lg border border-white/[0.06] overflow-hidden">
-            {loading ? (
-              <div className="p-8 text-center text-white/30 text-sm">Cargando...</div>
-            ) : recentPosts.length === 0 ? (
-              <div className="p-8 text-center">
-                <p className="text-white/30 text-sm mb-3">No hay artículos todavía</p>
-                <Link
-                  href="/admin/posts/new"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-white text-black text-[13px] font-medium hover:bg-white/90 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Crear primer artículo
-                </Link>
-              </div>
-            ) : (
-              <div className="divide-y divide-white/[0.06]">
-                {recentPosts.map((post) => (
-                  <Link
-                    key={post.id}
-                    href={`/admin/posts/${post.id}/edit`}
-                    className="flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors group"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className={`w-2 h-2 rounded-full shrink-0 ${post.published ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-                      <div className="min-w-0">
-                        <p className="text-[14px] font-medium truncate group-hover:text-white/90">{post.title}</p>
-                        <p className="text-[12px] text-white/30 truncate">{post.description}</p>
-                      </div>
-                    </div>
-                    <div className="text-[11px] text-white/30 shrink-0 ml-4">
-                      {new Date(post.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      )}
     </AdminLayout>
   );
 }
