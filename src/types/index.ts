@@ -1,7 +1,10 @@
+export type UserRole = 'owner' | 'editor';
+
 export interface User {
   id: number;
   email: string;
   name: string;
+  role: UserRole;
   createdAt: string;
 }
 
@@ -44,6 +47,7 @@ export interface UpdateBlogPostInput {
 export interface AuthToken {
   userId: number;
   email: string;
+  role: UserRole;
   iat: number;
   exp: number;
 }

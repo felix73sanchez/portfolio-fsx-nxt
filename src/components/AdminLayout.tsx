@@ -16,11 +16,12 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; role?: string } | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('userName');
-    setUser({ name: storedUser || 'Admin' });
+    const storedRole = localStorage.getItem('userRole');
+    setUser({ name: storedUser || 'Admin', role: storedRole || undefined });
   }, []);
 
   const handleLogout = async () => {
@@ -33,13 +34,27 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
     router.push('/admin/login');
   };
 
+  // Redirect editor users away from owner-only pages
+  useEffect(() => {
+    if (!user?.role) return;
+
+    const ownerOnlyPaths = ['/admin/projects', '/admin/profile', '/admin/content'];
+    const isOwnerOnly = ownerOnlyPaths.some(
+      (path) => pathname === path || pathname.startsWith(path + '/')
+    );
+
+    if (user.role !== 'owner' && isOwnerOnly) {
+      router.push('/admin/dashboard');
+    }
+  }, [user, pathname, router]);
+
   useEffect(() => {
     if (sidebarOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
     return () => { document.body.style.overflow = 'unset'; };
   }, [sidebarOpen]);
 
-  const navItems = [
+  const allNavItems = [
     {
       href: '/admin/dashboard',
       label: 'Dashboard',
@@ -49,6 +64,7 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
             d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
         </svg>
       ),
+      requireOwner: false,
     },
     {
       href: '/admin/posts',
@@ -59,6 +75,7 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
+      requireOwner: false,
     },
     {
       href: '/admin/projects',
@@ -69,6 +86,18 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
             d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
         </svg>
       ),
+      requireOwner: true,
+    },
+    {
+      href: '/admin/content',
+      label: 'Site Content',
+      icon: (
+        <svg className="admin-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      ),
+      requireOwner: true,
     },
     {
       href: '/admin/profile',
@@ -79,8 +108,13 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       ),
+      requireOwner: true,
     },
   ];
+
+  const navItems = allNavItems.filter(
+    (item) => !item.requireOwner || user?.role === 'owner'
+  );
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 

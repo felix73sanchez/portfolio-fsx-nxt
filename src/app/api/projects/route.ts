@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { initializeDatabase } from '@/lib/db/init';
 import { getVisibleProjects, getAllProjects, createProject } from '@/lib/db/projects';
-import { getAuthFromCookies } from '@/lib/auth';
+import { getAuthFromCookies, requireOwnerFromCookies } from '@/lib/auth';
 import { CreateProjectInput } from '@/types';
 
 // Initialize database
@@ -29,10 +29,8 @@ export async function GET() {
 // POST - Create project (admin only)
 export async function POST(request: Request) {
     try {
-        const user = await getAuthFromCookies();
-        if (!user) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        }
+        const auth = await requireOwnerFromCookies();
+        if (auth instanceof NextResponse) return auth;
 
         const body: CreateProjectInput = await request.json();
 

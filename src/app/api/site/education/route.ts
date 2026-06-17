@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { initializeDatabase } from '@/lib/db/init';
 import { getAllEducation, createEducation, Education } from '@/lib/db/site';
-import { getAuthFromCookies } from '@/lib/auth';
+import { requireOwnerFromCookies } from '@/lib/auth';
 
 initializeDatabase();
 
@@ -18,9 +18,8 @@ export async function GET() {
 // POST - Create education (admin only)
 export async function POST(request: Request) {
     try {
-        if (!(await getAuthFromCookies())) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        }
+        const auth = await requireOwnerFromCookies();
+        if (auth instanceof NextResponse) return auth;
 
         const body: Omit<Education, 'id' | 'createdAt' | 'updatedAt'> = await request.json();
 

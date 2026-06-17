@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createUser, getUserByEmail, generateToken } from '@/lib/auth';
-import { initializeDatabase } from '@/lib/db/init';
+import { getDb, initializeDatabase } from '@/lib/db/init';
 import { registerRateLimiter } from '@/lib/rate-limit';
 
 // Código de invitación — DEBE estar en .env.local o variable de entorno
@@ -67,11 +67,15 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Determinar rol: el primer usuario registrado es owner, los siguientes editor
+        const userCount = (getDb().prepare('SELECT COUNT(*) as count FROM users').get() as { count: number }).count;
+        const role = userCount === 0 ? 'owner' : 'editor';
+
         // Crear el usuario
-        const user = createUser(email, password, name);
+        const user = createUser(email, password, name, role);
 
         // Generar token
-        const token = generateToken(user.id, user.email);
+        const token = generateToken(user.id, user.email, user.role);
 
         // Create response
         const response = NextResponse.json({
@@ -80,6 +84,7 @@ export async function POST(request: NextRequest) {
                 id: user.id,
                 email: user.email,
                 name: user.name,
+                role: user.role,
             },
         });
 

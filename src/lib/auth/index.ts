@@ -1,9 +1,9 @@
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getDb } from '@/lib/db/init';
-import { User, AuthToken } from '@/types';
+import { User, UserRole, AuthToken } from '@/types';
 
 // ============================================
 // SECURITY: JWT Secret Configuration
@@ -39,9 +39,9 @@ export function comparePasswords(password: string, hash: string): boolean {
   return bcryptjs.compareSync(password, hash);
 }
 
-export function generateToken(userId: number, email: string): string {
+export function generateToken(userId: number, email: string, role: UserRole): string {
   return jwt.sign(
-    { userId, email },
+    { userId, email, role },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRY }
   );
@@ -87,19 +87,36 @@ export async function getAuthFromCookies(): Promise<AuthToken | null> {
   return verifyToken(token);
 }
 
-export function createUser(email: string, password: string, name: string): User {
+/**
+ * Checks cookie-based auth and verifies the user is an owner.
+ * Returns the AuthToken if owner, or a 401/403 Response otherwise.
+ * Use in Route Handlers that receive a plain `Request`.
+ */
+export async function requireOwnerFromCookies(): Promise<AuthToken | NextResponse> {
+  const auth = await getAuthFromCookies();
+  if (!auth) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+  if (auth.role !== 'owner') {
+    return NextResponse.json({ error: 'Solo el dueño del sitio puede realizar esta acción' }, { status: 403 });
+  }
+  return auth;
+}
+
+export function createUser(email: string, password: string, name: string, role: UserRole = 'editor'): User {
   const db = getDb();
   const hashedPassword = hashPassword(password);
   const createdAt = new Date().toISOString();
 
   const result = db
-    .prepare('INSERT INTO users (email, password, name, createdAt) VALUES (?, ?, ?, ?)')
-    .run(email, hashedPassword, name, createdAt);
+    .prepare('INSERT INTO users (email, password, name, role, createdAt) VALUES (?, ?, ?, ?, ?)')
+    .run(email, hashedPassword, name, role, createdAt);
 
   return {
     id: result.lastInsertRowid as number,
     email,
     name,
+    role,
     createdAt,
   };
 }
@@ -107,7 +124,7 @@ export function createUser(email: string, password: string, name: string): User 
 export function getUserByEmail(email: string): (User & { password: string }) | null {
   const db = getDb();
   const user = db
-    .prepare('SELECT * FROM users WHERE email = ?')
+    .prepare('SELECT id, email, name, role, createdAt, password FROM users WHERE email = ?')
     .get(email) as (User & { password: string }) | undefined;
 
   return user || null;
@@ -116,10 +133,25 @@ export function getUserByEmail(email: string): (User & { password: string }) | n
 export function getUserById(id: number): User | null {
   const db = getDb();
   const user = db
-    .prepare('SELECT id, email, name, createdAt FROM users WHERE id = ?')
+    .prepare('SELECT id, email, name, role, createdAt FROM users WHERE id = ?')
     .get(id) as User | undefined;
 
   return user || null;
+}
+
+/**
+ * Returns 403 response if user is not an owner.
+ * Usage: `const userOrResponse = await requireOwner(request); if (userOrResponse instanceof NextResponse) return userOrResponse;`
+ */
+export async function requireOwner(request: NextRequest): Promise<User | NextResponse> {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+  if (user.role !== 'owner') {
+    return NextResponse.json({ error: 'Solo el dueño del sitio puede realizar esta acción' }, { status: 403 });
+  }
+  return user;
 }
 
 // ============================================

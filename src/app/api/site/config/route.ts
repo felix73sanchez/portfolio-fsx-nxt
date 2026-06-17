@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { initializeDatabase } from '@/lib/db/init';
 import { getSiteConfig, updateSiteConfigBatch, SiteConfig } from '@/lib/db/site';
-import { getAuthFromCookies } from '@/lib/auth';
+import { requireOwnerFromCookies } from '@/lib/auth';
 
 // Initialize database
 initializeDatabase();
@@ -19,9 +19,8 @@ export async function GET() {
 // PUT - Update site config (admin only)
 export async function PUT(request: Request) {
     try {
-        if (!(await getAuthFromCookies())) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        }
+        const auth = await requireOwnerFromCookies();
+        if (auth instanceof NextResponse) return auth;
 
         const body: Partial<SiteConfig> = await request.json();
 

@@ -30,22 +30,21 @@ export function initializeDatabase(): void {
       email TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       name TEXT,
+      role TEXT NOT NULL DEFAULT 'editor',
       createdAt TEXT NOT NULL,
       resetToken TEXT,
       resetTokenExpiry TEXT
     )
   `);
 
-  // Migración: agregar columnas de reset de contraseña si no existen
-  try {
-    database.exec(`ALTER TABLE users ADD COLUMN resetToken TEXT`);
-  } catch {
-    // ya existe
-  }
-  try {
-    database.exec(`ALTER TABLE users ADD COLUMN resetTokenExpiry TEXT`);
-  } catch {
-    // ya existe
+  // Migraciones
+  const migrations = [
+    'ALTER TABLE users ADD COLUMN resetToken TEXT',
+    'ALTER TABLE users ADD COLUMN resetTokenExpiry TEXT',
+    `ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'editor'`,
+  ];
+  for (const sql of migrations) {
+    try { database.exec(sql); } catch { /* ya existe */ }
   }
 
   // Crear tabla de blog posts con campo de autor

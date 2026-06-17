@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getEducationById, updateEducation, deleteEducation } from '@/lib/db/site';
-import { getAuthFromCookies } from '@/lib/auth';
+import { requireOwnerFromCookies } from '@/lib/auth';
 
 // GET - Get education by ID
 export async function GET(
@@ -27,9 +27,8 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        if (!(await getAuthFromCookies())) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        }
+        const auth = await requireOwnerFromCookies();
+        if (auth instanceof NextResponse) return auth;
 
         const { id } = await params;
         const body = await request.json();
@@ -52,9 +51,8 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        if (!(await getAuthFromCookies())) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        }
+        const auth = await requireOwnerFromCookies();
+        if (auth instanceof NextResponse) return auth;
 
         const { id } = await params;
         const deleted = deleteEducation(parseInt(id));
