@@ -55,84 +55,184 @@
 - **Privacidad**: Registro protegido mediante código de invitación (sin fallback hardcodeado).
 - **Clean Architecture**: Código modular y tipado estrictamente con TypeScript.
 
-## 🚀 Inicio Rápido
+## 🚀 Guía de Instalación (para no técnicos)
 
-Sigue estos pasos para tener tu portafolio funcionando en minutos.
+> ¿Querés tu propio portafolio + blog funcionando sin depender de Wix, WordPress o Medium? Esta guía te lleva paso a paso.
 
-### 1. Instalación
+### Qué necesitás
+
+- **Un VPS** (servidor virtual): podés alquilar uno desde ~$5/mes en [Hetzner](https://www.hetzner.com/), [DigitalOcean](https://www.digitalocean.com/), [Linode](https://www.linode.com/) o [Vultr](https://www.vultr.com/). Con 1GB de RAM y 25GB de disco alcanza.
+- **Un dominio** (opcional pero recomendado): ej. `tunombre.com`. Podés comprarlo en [Namecheap](https://www.namecheap.com/), [Cloudflare](https://www.cloudflare.com/) o [Porkbun](https://porkbun.com/).
+- **Acceso SSH** al servidor — tu proveedor de VPS te da las credenciales al crearlo.
+
+---
+
+### Paso 1: Conectarte al servidor
+
+Cuando crees tu VPS, el proveedor te va a dar una **IP** (como `203.0.113.10`), un **usuario** (generalmente `root`) y una **contraseña**.
+
+En tu computadora, abrí la Terminal (Mac/Linux) o PowerShell (Windows) y ejecutá:
 
 ```bash
-# Clonar el repositorio
-git clone https://github.com/tu-usuario/portfolio-fsx-nxt.git
-cd portfolio-fsx-nxt
-
-# Instalar dependencias
-npm install
+ssh root@203.0.113.10
 ```
 
-### 2. Configuración
+Reemplazá `203.0.113.10` con la IP de tu servidor. Te va a pedir la contraseña — la escribís y das Enter (no se ve mientras escribís, es normal).
 
-Crea un archivo `.env.local` en la raíz:
+> **¿No tenés terminal?** Si estás en Windows, instalá [Windows Terminal](https://apps.microsoft.com/detail/9n0dx20hk701) desde la Microsoft Store. En Mac, ya viene incluida (buscá "Terminal" en Spotlight).
+
+---
+
+### Paso 2: Instalar Docker (una sola vez)
+
+Docker es el programa que va a correr el portafolio. Pegá estos comandos uno por uno en la terminal del servidor:
+
+```bash
+# Actualizar paquetes del sistema
+apt update && apt upgrade -y
+
+# Instalar Docker (la herramienta principal)
+curl -fsSL https://get.docker.com | sh
+
+# Verificar que Docker quedó bien instalado
+docker --version
+```
+
+Si ves un número de versión, está listo.
+
+---
+
+### Paso 3: Descargar el proyecto
+
+```bash
+git clone https://github.com/felix73sanchez/portfolio-fsx-nxt.git
+cd portfolio-fsx-nxt
+```
+
+---
+
+### Paso 4: Configurar
+
+Creá un archivo de configuración con tus datos:
+
+```bash
+nano .env
+```
+
+Dentro del editor (nano), escribí estas dos líneas reemplazando los valores por los tuyos:
 
 ```env
-# Clave secreta para JWT (genera una cadena larga aleatoria)
-JWT_SECRET=tu-clave-secreta-cambiar-en-produccion
-
-# Código requerido para registrar el primer administrador
-INVITATION_CODE=admin-secret-code
+JWT_SECRET=poné-acá-una-frase-larga-y-azarosa-que-solo-vos-sepas
+INVITATION_CODE=poné-acá-un-código-secreto-para-registrarte
 ```
 
-### 3. Desarrollo
+**Explicación:**
+- `JWT_SECRET`: es la clave que protege las sesiones de los usuarios. Poné cualquier frase larga y difícil de adivinar.
+- `INVITATION_CODE`: es el código que vas a necesitar para crear tu primer usuario. Después del registro inicial podés cambiarlo.
+
+Guardá con `Ctrl + O`, Enter, y salí con `Ctrl + X`.
+
+---
+
+### Paso 5: Levantar el portafolio
 
 ```bash
-# Iniciar servidor de desarrollo
-npm run dev
+docker compose up -d --build
 ```
 
-Visita [http://localhost:3000](http://localhost:3000).
+Este comando puede tardar unos minutos la primera vez (está descargando dependencias y compilando). Al finalizar vas a ver algo como:
 
-### 4. Setup Inicial
+```
+✔ Container portfolio-fsx  Started
+```
 
-1.  Navega a `/admin/register`.
-2.  Ingresa el `INVITATION_CODE` que definiste y crea tu usuario.
-3.  Accede al dashboard en `/admin`.
-4.  **(Opcional)** Puedes poblar datos de ejemplo ejecutando:
-    ```bash
-    npx tsx scripts/seed-my-data.ts   # Carga datos de perfil de ejemplo
-    ```
+**Tu portafolio ya está corriendo** en `http://tu-ip-del-servidor:7373`.
 
-### 5. Despliegue con Docker 🐳
+---
 
-El proyecto está completamente preparado para Docker.
+### Paso 6: Crear tu cuenta de administrador
 
-**Usando Docker Compose (Recomendado):**
+1. En tu navegador, andá a `http://tu-ip-del-servidor:7373/admin/register`.
+2. Ingresá el `INVITATION_CODE` que pusiste en el `.env`.
+3. Completá tu email, nombre y contraseña.
+4. **Ya sos administrador.** Entrás a `/admin` y ves el panel.
+
+---
+
+### Paso 7: Ponerle tu dominio (opcional)
+
+Si tenés un dominio, estos son los pasos generales:
+
+1. En tu proveedor de dominio, creá un registro **A** que apunte a la IP de tu servidor.
+2. Instalá un proxy reverso como **Nginx Proxy Manager** o **Caddy** usando Docker para manejar SSL (certificado HTTPS gratis con Let's Encrypt).
+3. Configurá el proxy para que redirija las peticiones a `http://localhost:7373`.
+
+> Si esto te suena chino, el portafolio funciona perfecto solo con la IP. El HTTPS se puede agregar después cuando tengas más confianza.
+
+---
+
+> **Ya está todo listo.** La primera vez que arranca la aplicación, se cargan automáticamente datos de perfil, experiencia laboral, educación, habilidades técnicas y proyectos. No necesitás hacer nada extra.
+
+---
+
+### Comandos útiles para el día a día
 
 ```bash
-# 1. Crea un archivo .env si no lo tienes (o edita docker-compose.yml directamente)
-# JWT_SECRET=...
-# INVITATION_CODE=...
+# Ver si el portafolio está corriendo
+docker ps
 
-# 2. Levanta el contenedor
-docker-compose up -d --build
+# Ver los registros (logs)
+docker compose logs -f
+
+# Frenar el portafolio
+docker compose down
+
+# Actualizar a la última versión
+git pull
+docker compose up -d --build
 ```
 
-La aplicación estará disponible en `http://localhost:7373`. Los datos (base de datos SQLite e imágenes subidas) persistirán en las carpetas locales `./data` y `./public/uploads`.
+---
 
-**Construcción Manual Segura:**
+### ¿Algo no funciona?
+
+- **Puerto ocupado**: si el puerto 7373 ya está en uso, cambiá el puerto en `docker-compose.yml` (línea `"7373:3000"` → `"8080:3000"`).
+- **No veo el sitio**: asegurate de que el firewall del servidor permita conexiones en el puerto. Probá con `ufw allow 7373` si usás UFW.
+- **Se me olvidó la contraseña**: eliminá el archivo `data/database.sqlite` y registrate de nuevo (perdés datos, pero podés volver a cargarlos).
+- **Otro problema**: abrí un [issue en GitHub](https://github.com/felix73sanchez/portfolio-fsx-nxt/issues), intentamos ayudarte.
+
+---
+> **Para desarrolladores**: si sabés manejar la terminal y preferís los comandos directos, la sección de abajo es para vos.
+
+---
+
+## 🚀 Inicio Rápido para Devs
 
 ```bash
-docker build -t portfolio-fsx .
-docker run -p 7373:3000 \
-  -v $(pwd)/data:/app/data \
-  -v $(pwd)/public/uploads:/app/public/uploads \
-  --user 1001:1001 \
-  -e JWT_SECRET=tu_secreto \
-  -e INVITATION_CODE=tu_codigo \
-  portfolio-fsx
+# Clonar e instalar
+git clone https://github.com/felix73sanchez/portfolio-fsx-nxt.git
+cd portfolio-fsx-nxt
+npm install
+
+# Configurar (crear .env.local)
+# JWT_SECRET=clave-secreta
+# INVITATION_CODE=codigo-invitacion
+
+# Desarrollo
+npm run dev        # http://localhost:3000
+
+# Docker producción
+docker compose up -d --build   # http://localhost:7373
 ```
+
+### Setup Inicial
+1. Andá a `/admin/register` e ingresá el `INVITATION_CODE`.
+2. Creá tu usuario — el primero es **owner** automáticamente.
+3. Accedé al dashboard en `/admin`.
+
+
 
 ## 📁 Estructura del Proyecto
-
 ```
 ├── src/
 │   ├── app/

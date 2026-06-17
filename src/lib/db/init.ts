@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
+import { seedIfEmpty } from './seed';
 
 let db: Database.Database | null = null;
 
@@ -162,4 +163,7 @@ export function initializeDatabase(): void {
     CREATE INDEX IF NOT EXISTS idx_skills_category ON skills(category);
     CREATE INDEX IF NOT EXISTS idx_education_order ON education(displayOrder);
   `);
+
+  // Auto-seed con datos de perfil si la BD está vacía
+  seedIfEmpty();
 }
