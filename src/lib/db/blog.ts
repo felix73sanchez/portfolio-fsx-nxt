@@ -60,6 +60,23 @@ export function getAllPosts(): BlogPost[] {
   return posts.map(parseBlogPost);
 }
 
+export function getUserPosts(userId: number): BlogPost[] {
+  const db = getDb();
+  const posts = db
+    .prepare(`
+      SELECT bp.id, bp.slug, bp.title, bp.description, bp.content, bp.coverImage, bp.tags, 
+             bp.published, bp.createdAt, bp.updatedAt, bp.publishedAt, bp.authorId,
+             u.name as authorName
+      FROM blog_posts bp
+      LEFT JOIN users u ON bp.authorId = u.id
+      WHERE bp.authorId = ?
+      ORDER BY bp.createdAt DESC
+    `)
+    .all(userId) as BlogPostRow[];
+
+  return posts.map(parseBlogPost);
+}
+
 export function getPostBySlug(slug: string): BlogPost | null {
   const db = getDb();
   const post = db

@@ -14,6 +14,30 @@ jest.mock('next/navigation', () => ({
     useSearchParams: () => new URLSearchParams(),
 }));
 
+// Mock next/server for auth module
+jest.mock('next/server', () => ({
+    NextRequest: class {
+        cookies = {
+            get: jest.fn(() => ({ value: 'mock-token' })),
+        };
+    },
+    NextResponse: {
+        json: jest.fn((data, init) => ({
+            ...init,
+            json: async () => data,
+        })),
+    },
+}));
+
+// Mock next/headers for auth module
+jest.mock('next/headers', () => ({
+    cookies: jest.fn(() => ({
+        get: jest.fn(() => ({ value: 'mock-token' })),
+        set: jest.fn(),
+        delete: jest.fn(),
+    })),
+}));
+
 // Mock localStorage
 const localStorageMock = {
     getItem: jest.fn(),

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllPublishedPosts, getAllPosts, createPost } from '@/lib/db/blog';
+import { getAllPublishedPosts, getAllPosts, getUserPosts, createPost } from '@/lib/db/blog';
 import { getUserFromRequest } from '@/lib/auth';
 import { initializeDatabase } from '@/lib/db/init';
 import {
@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
         const user = await getUserFromRequest(request);
 
         if (user) {
-            // Admin autenticado: devuelve todos los posts
-            const posts = getAllPosts();
+            // Owner: devuelve todos los posts. Editor: solo sus posts.
+            const posts = user.role === 'owner' ? getAllPosts() : getUserPosts(user.id);
             return NextResponse.json(posts);
         } else {
             // Público: solo posts publicados

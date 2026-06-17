@@ -44,9 +44,10 @@ describe('Auth Library', () => {
     describe('JWT Tokens', () => {
         const mockUserId = 1;
         const mockEmail = 'test@example.com';
+        const mockRole = 'owner' as const;
 
         it('should generate a valid token', () => {
-            const token = generateToken(mockUserId, mockEmail);
+            const token = generateToken(mockUserId, mockEmail, mockRole);
 
             expect(token).toBeDefined();
             expect(typeof token).toBe('string');
@@ -54,12 +55,13 @@ describe('Auth Library', () => {
         });
 
         it('should verify a valid token', () => {
-            const token = generateToken(mockUserId, mockEmail);
+            const token = generateToken(mockUserId, mockEmail, mockRole);
             const decoded = verifyToken(token);
 
             expect(decoded).toBeDefined();
             expect(decoded?.userId).toBe(mockUserId);
             expect(decoded?.email).toBe(mockEmail);
+            expect(decoded?.role).toBe(mockRole);
         });
 
         it('should reject an invalid token', () => {
@@ -70,7 +72,7 @@ describe('Auth Library', () => {
         });
 
         it('should reject a tampered token', () => {
-            const token = generateToken(mockUserId, mockEmail);
+            const token = generateToken(mockUserId, mockEmail, mockRole);
             const tamperedToken = token.slice(0, -5) + 'xxxxx';
             const decoded = verifyToken(tamperedToken);
 

@@ -26,15 +26,26 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        // Si no está publicado, verificar autenticación
-        if (!post.published) {
-            const user = await getUserFromRequest(request);
-            if (!user) {
-                return NextResponse.json(
-                    { error: 'Post no encontrado' },
-                    { status: 404 }
-                );
-            }
+        // Público: solo posts publicados
+        if (post.published) {
+            return NextResponse.json(post);
+        }
+
+        // No publicado: requiere autenticación
+        const user = await getUserFromRequest(request);
+        if (!user) {
+            return NextResponse.json(
+                { error: 'Post no encontrado' },
+                { status: 404 }
+            );
+        }
+
+        // Editor solo ve sus propios posts
+        if (user.role !== 'owner' && post.authorId !== user.id) {
+            return NextResponse.json(
+                { error: 'Post no encontrado' },
+                { status: 404 }
+            );
         }
 
         return NextResponse.json(post);
@@ -62,6 +73,22 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         }
 
         const { id } = await params;
+
+        // Editor solo puede editar sus propios posts
+        const existing = getPostById(parseInt(id));
+        if (!existing) {
+            return NextResponse.json(
+                { error: 'Post no encontrado' },
+                { status: 404 }
+            );
+        }
+        if (user.role !== 'owner' && existing.authorId !== user.id) {
+            return NextResponse.json(
+                { error: 'No autorizado' },
+                { status: 403 }
+            );
+        }
+
         const body: Record<string, unknown> = await request.json();
 
         // Validar tipos de campos opcionales si están presentes
@@ -128,6 +155,22 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         }
 
         const { id } = await params;
+
+        // Editor solo puede eliminar sus propios posts
+        const existing = getPostById(parseInt(id));
+        if (!existing) {
+            return NextResponse.json(
+                { error: 'Post no encontrado' },
+                { status: 404 }
+            );
+        }
+        if (user.role !== 'owner' && existing.authorId !== user.id) {
+            return NextResponse.json(
+                { error: 'No autorizado' },
+                { status: 403 }
+            );
+        }
+
         const deleted = deletePost(parseInt(id));
 
         if (!deleted) {
