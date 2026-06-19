@@ -110,6 +110,8 @@ body {
   background: var(--bg);
   color: var(--fg);
   line-height: 1.6;
+  /* Fluid body text: 16px on phones → 18px on wide screens, scales smoothly. */
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
   transition: background 0.3s ease, color 0.3s ease;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
@@ -127,7 +129,8 @@ a:hover {
 .container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  /* Fluid gutter: 1.5rem on phones, grows to 2rem on larger screens. */
+  padding: 0 clamp(1.5rem, 4vw, 2rem);
 }
 
 h1,
@@ -138,18 +141,19 @@ h4 {
   line-height: 1.2;
 }
 
+/* Fluid headings — scale continuously with the viewport, no breakpoint jumps. */
 h1 {
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 1.5rem + 2vw, 2.5rem);
   margin-bottom: 0.5rem;
 }
 
 h2 {
-  font-size: 1.875rem;
+  font-size: clamp(1.6rem, 1.3rem + 1.4vw, 1.875rem);
   margin-bottom: 1rem;
 }
 
 h3 {
-  font-size: 1.5rem;
+  font-size: clamp(1.3rem, 1.15rem + 0.7vw, 1.5rem);
   margin-bottom: 0.75rem;
 }
 
@@ -181,10 +185,15 @@ pre code {
   position: sticky;
   top: 0;
   background: rgba(10, 10, 10, 0.95);
-  z-index: 100;
+  z-index: 200;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   transition: background 0.3s ease;
+  /* iOS Safari: a backdrop-filter element loses paint priority against
+     transformed/animated content below it. Promote the header to its own
+     compositing layer so it always stays above scrolled project cards. */
+  isolation: isolate;
+  transform: translateZ(0);
 }
 
 [data-theme="light"] .header {
@@ -589,9 +598,16 @@ pre code {
 }
 
 .section-title {
-  font-size: 1.75rem;
+  font-size: clamp(1.45rem, 1.2rem + 1.2vw, 1.75rem);
   font-weight: 700;
   margin-bottom: 1.5rem;
+}
+
+/* Page-level title (Proyectos, Blog, …) — fluid, replaces text-4xl/md:text-5xl */
+.page-title {
+  font-size: clamp(2rem, 1.4rem + 3vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
 }
 
 /* Experience Card */
@@ -678,32 +694,63 @@ pre code {
   }
 
   .nav-links {
-    gap: 0.75rem;
-    flex-wrap: wrap;
+    gap: 0.4rem;
+    flex-wrap: nowrap;
     justify-content: flex-end;
+    min-width: 0;
+    /* Never wrap to a second row; scroll horizontally as a safety net on
+       very narrow screens (<360px) instead of inflating the header. */
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav-links::-webkit-scrollbar {
+    display: none;
   }
 
   .nav-link {
     font-size: 0.8rem;
-    gap: 0.2rem;
+    gap: 0;
+    padding: 0.5rem 0;
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
+  /* Drop the sliding underline on mobile: when a link is clipped by the
+     horizontal-scroll safety net, its active ::after left only a blue dot.
+     Active page is still signalled via the brighter text color below. */
+  .nav-link::after {
+    display: none;
+  }
+
+  /* Icon-only compact mode: drop the 01.–04. prefixes to fit one row */
   .nav-number {
-    font-size: 0.65rem;
+    display: none;
+  }
+
+  /* Hide the redundant "Inicio" link on mobile — the logo already links home.
+     This frees the space that was clipping the first item ("io" remnant). */
+  .nav-links > .nav-link:first-child {
+    display: none;
+  }
+
+  .cmdk-trigger,
+  .theme-toggle {
+    flex: 0 0 auto;
+  }
+
+  .cmdk-trigger {
+    margin-left: 0.25rem;
+    padding: 0 0.6rem;
   }
 
   .theme-toggle {
     width: 36px;
     height: 36px;
+    margin-left: 0.25rem;
   }
 
-  h1 {
-    font-size: 2rem;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-  }
+  /* h1/h2 sizes now handled by fluid clamp() — no fixed mobile override. */
 
   .section {
     padding: 3rem 0;

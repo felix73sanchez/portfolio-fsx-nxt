@@ -112,29 +112,29 @@ export default function SobreMiPage() {
         </section>
       )}
 
-      {/* Education */}
-      {education.length > 0 && (
-        <section className="section container">
-          <h2 className="section-title">Educación</h2>
-          {education.map(edu => (
-            <div key={edu.id} className="project-card mb-4">
-              <div className="flex justify-between items-start flex-wrap gap-2">
-                <div>
-                  <h3 className="text-xl font-semibold mb-1">{edu.degree}</h3>
-                  <p style={{ color: 'var(--accent)' }} className="font-medium">{edu.institution}</p>
-                  {edu.location && <p style={{ color: 'var(--gray)' }} className="text-sm">{edu.location}</p>}
-                </div>
-                <span style={{ color: 'var(--gray)' }} className="text-sm">
-                  {edu.startYear} – {edu.current ? 'Presente' : edu.endYear}
-                </span>
-              </div>
-              {edu.description && (
-                <p style={{ color: 'var(--gray)' }} className="mt-2 text-sm">{edu.description}</p>
-              )}
-            </div>
-          ))}
-        </section>
-      )}
+{/* Education */}
+{education.length > 0 && (
+  <section className="section container">
+    <h2 className="section-title">Educación</h2>
+    {education.map(edu => (
+      <div key={edu.id} className="project-card" style={{ marginBottom: '1.5rem', padding: '2rem' }}>
+        <div className="flex justify-between items-start flex-wrap" style={{ gap: '0.5rem' }}>
+          <div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.25rem' }}>{edu.degree}</h3>
+            <p style={{ color: 'var(--accent)', fontWeight: 500 }}>{edu.institution}</p>
+            {edu.location && <p style={{ color: 'var(--gray)', fontSize: '0.875rem' }}>{edu.location}</p>}
+          </div>
+          <span style={{ color: 'var(--gray)', fontSize: '0.875rem' }}>
+            {edu.startYear} – {edu.current ? 'Presente' : edu.endYear}
+          </span>
+        </div>
+        {edu.description && (
+          <p style={{ color: 'var(--gray)', marginTop: '0.75rem', fontSize: '0.875rem' }}>{edu.description}</p>
+        )}
+      </div>
+    ))}
+  </section>
+)}
 
       <Footer github={profile.github} linkedin={profile.linkedin} email={profile.email} />
     </main>

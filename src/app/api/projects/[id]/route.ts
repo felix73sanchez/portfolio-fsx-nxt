@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getProjectById, updateProject, deleteProject } from '@/lib/db/projects';
 import { requireOwnerFromCookies } from '@/lib/auth';
 import { UpdateProjectInput } from '@/types';
@@ -40,6 +41,9 @@ export async function PUT(
             return NextResponse.json({ error: 'Proyecto no encontrado' }, { status: 404 });
         }
 
+        revalidatePath('/');
+        revalidatePath('/proyectos');
+
         return NextResponse.json(project);
     } catch {
         return NextResponse.json({ error: 'Error updating project' }, { status: 500 });
@@ -61,6 +65,9 @@ export async function DELETE(
         if (!deleted) {
             return NextResponse.json({ error: 'Proyecto no encontrado' }, { status: 404 });
         }
+
+        revalidatePath('/');
+        revalidatePath('/proyectos');
 
         return NextResponse.json({ success: true });
     } catch {

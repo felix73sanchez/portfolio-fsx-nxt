@@ -33,7 +33,7 @@ export default function BlogPage() {
       <div className="container" style={{ paddingTop: '5rem', paddingBottom: '3rem' }}>
         {/* Header */}
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Blog</h1>
+          <h1 className="page-title mb-4">Blog</h1>
           <p className="text-lg" style={{ color: 'var(--gray)' }}>
             Artículos sobre desarrollo backend, arquitectura de software y mejores prácticas.
           </p>
@@ -150,9 +150,9 @@ export default function BlogPage() {
           </div>
         )}
 
-        {/* Newsletter CTA */}
-        {posts.length > 0 && (
-          <div className="project-card text-center mt-12">
+       {/* Newsletter CTA */}
+{posts.length > 0 && (
+  <div className="project-card text-center" style={{ marginTop: '4rem', padding: '2.5rem' }}>
             <h3 className="text-xl font-bold mb-2">¿Te interesa el contenido?</h3>
             <p style={{ color: 'var(--gray)' }} className="mb-4">
               Sígueme en mis redes para más artículos y tips de desarrollo.

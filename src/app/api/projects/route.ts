@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { initializeDatabase } from '@/lib/db/init';
 import { getVisibleProjects, getAllProjects, createProject } from '@/lib/db/projects';
 import { getAuthFromCookies, requireOwnerFromCookies } from '@/lib/auth';
@@ -42,6 +43,10 @@ export async function POST(request: Request) {
         }
 
         const project = createProject(body);
+
+        revalidatePath('/');
+        revalidatePath('/proyectos');
+
         return NextResponse.json(project, { status: 201 });
     } catch {
         return NextResponse.json({ error: 'Error creating project' }, { status: 500 });

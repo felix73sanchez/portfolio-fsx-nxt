@@ -75,7 +75,7 @@ export default function ProyectosPage() {
       <div className="container" style={{ paddingTop: '5rem', paddingBottom: '3rem' }}>
         {/* Header */}
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Proyectos</h1>
+          <h1 className="page-title mb-4">Proyectos</h1>
           <p className="text-lg" style={{ color: 'var(--gray)' }}>
             Algunos de mis trabajos personales y experimentos con tecnologías modernas.
           </p>
