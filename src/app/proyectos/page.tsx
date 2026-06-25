@@ -76,7 +76,7 @@ export default function ProyectosPage() {
         {/* Header */}
         <div className="mb-12">
           <h1 className="page-title mb-4">Proyectos</h1>
-          <p className="text-lg" style={{ color: 'var(--gray)' }}>
+          <p className="text-lg" style={{ color: 'var(--gray)', maxWidth: '600px' }}>
             Algunos de mis trabajos personales y experimentos con tecnologías modernas.
           </p>
         </div>

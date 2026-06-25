@@ -114,6 +114,9 @@ body {
   font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
   transition: background 0.3s ease, color 0.3s ease;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Prevent long URLs/strings from causing horizontal scroll on mobile */
+  overflow-wrap: break-word;
+  overflow-x: clip;
 }
 
 a {
@@ -207,8 +210,8 @@ pre code {
   padding: 0.5rem 0;
   max-width: 800px;
   margin: 0 auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding-left: clamp(1.5rem, 4vw, 2rem);
+  padding-right: clamp(1.5rem, 4vw, 2rem);
 }
 
 .logo {
@@ -294,8 +297,8 @@ pre code {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid var(--border);
   background: var(--light-gray);
@@ -361,6 +364,11 @@ pre code {
   text-decoration: none;
   font-size: 0.9rem;
   transition: color 0.2s ease;
+  /* Touch-friendly: ensure 44px minimum tap target */
+  padding: 0.5rem 0;
+  display: inline-block;
+  min-height: 44px;
+  line-height: 1.6;
 }
 
 .footer-nav a:hover {
@@ -369,12 +377,19 @@ pre code {
 
 .footer-socials {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .footer-socials a {
   color: var(--gray);
   transition: color 0.2s ease;
+  /* Touch-friendly: 44px tap zone around 20px icons */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 8px;
 }
 
 .footer-socials a:hover {
@@ -684,6 +699,9 @@ pre code {
 }
 
 /* Responsive */
+/* ==========================================
+   Mobile slide-in nav (hamburger menu)
+   ========================================== */
 @media (max-width: 640px) {
   .header {
     padding: 0.75rem 0;
@@ -693,64 +711,14 @@ pre code {
     font-size: 1.1rem;
   }
 
+  /* Hide desktop nav-links on mobile; replaced by hamburger + slide-in panel */
   .nav-links {
-    gap: 0.4rem;
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-    min-width: 0;
-    /* Never wrap to a second row; scroll horizontally as a safety net on
-       very narrow screens (<360px) instead of inflating the header. */
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .nav-links::-webkit-scrollbar {
     display: none;
   }
 
   .nav-link {
     font-size: 0.8rem;
-    gap: 0;
-    padding: 0.5rem 0;
-    flex: 0 0 auto;
-    white-space: nowrap;
   }
-
-  /* Drop the sliding underline on mobile: when a link is clipped by the
-     horizontal-scroll safety net, its active ::after left only a blue dot.
-     Active page is still signalled via the brighter text color below. */
-  .nav-link::after {
-    display: none;
-  }
-
-  /* Icon-only compact mode: drop the 01.–04. prefixes to fit one row */
-  .nav-number {
-    display: none;
-  }
-
-  /* Hide the redundant "Inicio" link on mobile — the logo already links home.
-     This frees the space that was clipping the first item ("io" remnant). */
-  .nav-links > .nav-link:first-child {
-    display: none;
-  }
-
-  .cmdk-trigger,
-  .theme-toggle {
-    flex: 0 0 auto;
-  }
-
-  .cmdk-trigger {
-    margin-left: 0.25rem;
-    padding: 0 0.6rem;
-  }
-
-  .theme-toggle {
-    width: 36px;
-    height: 36px;
-    margin-left: 0.25rem;
-  }
-
-  /* h1/h2 sizes now handled by fluid clamp() — no fixed mobile override. */
 
   .section {
     padding: 3rem 0;
@@ -759,6 +727,154 @@ pre code {
   .project-card {
     padding: 1.25rem;
   }
+}
+
+/* Mobile controls — visible only on small screens */
+.mobile-controls {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@media (max-width: 640px) {
+  .mobile-controls {
+    display: flex;
+  }
+}
+
+.mobile-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  padding: 0;
+  z-index: 210;
+}
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 24px;
+  height: 24px;
+}
+
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--fg);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Slide-in overlay */
+.mobile-nav-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 150;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Slide-in panel */
+.mobile-nav-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(300px, 80vw);
+  height: 100vh;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  z-index: 160;
+  padding: 5rem 2rem 2rem;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+}
+
+.mobile-nav-panel.open {
+  transform: translateX(0);
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--gray);
+  border-bottom: 1px solid var(--border);
+  transition: color 0.2s ease;
+}
+
+.mobile-nav-link.active {
+  color: var(--fg);
+}
+
+.mobile-nav-link:hover {
+  color: var(--accent);
+  opacity: 1;
+}
+
+/* Section accent bar — decorative blue bar before section titles */
+.section-accent {
+  display: inline-block;
+  width: 4px;
+  height: 1.4em;
+  background: var(--accent);
+  margin-right: 0.75rem;
+  vertical-align: middle;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* Glass card — subtle blurred border card */
+.glass-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+}
+
+/* CTA card — contact call-to-action container */
+.cta-card {
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card-bg);
+  transition: border-color 0.3s ease;
+}
+
+.cta-card:hover {
+  border-color: var(--accent);
 }
 
 /* ==========================================
@@ -1042,8 +1158,8 @@ pre code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--gray);
@@ -1197,7 +1313,7 @@ select:focus-visible {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  height: 40px;
+  min-height: 44px;
   padding: 0 0.7rem;
   border-radius: 8px;
   border: 1px solid var(--border);

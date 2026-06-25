@@ -134,7 +134,7 @@ export default function BlogPage() {
 
                     {/* Cover Image */}
                     {post.coverImage && (
-                      <div className="md:w-48 h-32 rounded-lg overflow-hidden flex-shrink-0"
+                      <div className="w-full aspect-video md:w-48 md:aspect-auto md:h-32 rounded-lg overflow-hidden flex-shrink-0"
                         style={{ border: '1px solid var(--border)' }}>
                         <img
                           src={post.coverImage}

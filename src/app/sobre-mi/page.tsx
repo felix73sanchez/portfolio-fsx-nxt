@@ -61,22 +61,24 @@ export default function SobreMiPage() {
       {/* About */}
       {profile.about && (
         <section className="section container">
-          <h2 className="section-title">Quién soy</h2>
-          <p style={{ color: 'var(--gray)' }} className="leading-relaxed text-lg">
-            {profile.about}
-          </p>
+          <h2 className="section-title"><span className="section-accent" aria-hidden="true" />Quién soy</h2>
+            <div className="glass-card" style={{ padding: 'clamp(1.25rem, 3vw, 2rem)' }}>
+            <p style={{ color: 'var(--gray)', maxWidth: '65ch' }} className="leading-relaxed text-lg">
+              {profile.about}
+            </p>
+          </div>
         </section>
       )}
 
       {/* Experience */}
       {experiences.length > 0 && (
         <section className="section container">
-          <h2 className="section-title">Experiencia</h2>
+          <h2 className="section-title"><span className="section-accent" aria-hidden="true" />Experiencia</h2>
           {experiences.map(exp => (
-            <div key={exp.id} className="experience-item">
+            <div key={exp.id} className="project-card" style={{ marginBottom: '1.25rem', borderLeft: '3px solid var(--accent)' }}>
               <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
                 <h3 className="text-xl font-semibold">{exp.title}</h3>
-                <span style={{ color: 'var(--accent)' }} className="text-sm font-medium">
+                <span style={{ color: 'var(--accent)' }} className="text-sm font-medium whitespace-nowrap">
                   {exp.startDate} – {exp.current ? 'Presente' : exp.endDate}
                 </span>
               </div>
@@ -84,7 +86,7 @@ export default function SobreMiPage() {
                 {exp.company} • {exp.location}
               </p>
               {exp.responsibilities.length > 0 && (
-                <ul style={{ color: 'var(--gray)' }} className="space-y-2 list-disc list-inside">
+                <ul style={{ color: 'var(--gray)' }} className="space-y-2 list-disc list-outside ml-5">
                   {exp.responsibilities.map((r, i) => <li key={i}>{r}</li>)}
                 </ul>
               )}
@@ -96,11 +98,11 @@ export default function SobreMiPage() {
       {/* Skills */}
       {Object.keys(skills).length > 0 && (
         <section className="section container">
-          <h2 className="section-title">Habilidades Técnicas</h2>
+          <h2 className="section-title"><span className="section-accent" aria-hidden="true" />Habilidades Técnicas</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {Object.entries(skills).map(([category, skillsArr]) => (
-              <div key={category} className="skill-category">
-                <h4>{category}</h4>
+              <div key={category} className="project-card">
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.85rem', color: 'var(--accent)' }}>{category}</h4>
                 <div className="flex flex-wrap gap-2">
                   {skillsArr.map(skill => (
                     <span key={skill} className="tech-badge">{skill}</span>
@@ -115,9 +117,9 @@ export default function SobreMiPage() {
 {/* Education */}
 {education.length > 0 && (
   <section className="section container">
-    <h2 className="section-title">Educación</h2>
+    <h2 className="section-title"><span className="section-accent" aria-hidden="true" />Educación</h2>
     {education.map(edu => (
-      <div key={edu.id} className="project-card" style={{ marginBottom: '1.5rem', padding: '2rem' }}>
+      <div key={edu.id} className="project-card" style={{ marginBottom: '1.5rem', padding: 'clamp(1.25rem, 3vw, 2rem)' }}>
         <div className="flex justify-between items-start flex-wrap" style={{ gap: '0.5rem' }}>
           <div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.25rem' }}>{edu.degree}</h3>
