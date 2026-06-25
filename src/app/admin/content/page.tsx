@@ -201,7 +201,7 @@ export default function ContentAdminPage() {
                     </div>
 
                     {showExpForm && (
-                        <div className="admin-form-section" style={{ marginBottom: '1.5rem' }}>
+                        <div className="admin-form-section admin-form-constrained" style={{ marginBottom: '1.5rem' }}>
                             <h3 className="admin-form-section-title">{editingExp ? 'Edit Experience' : 'New Experience'}</h3>
                             <form onSubmit={handleExpSubmit}>
                                 <div className="admin-form-grid" style={{ marginBottom: '1rem' }}>
@@ -305,7 +305,7 @@ export default function ContentAdminPage() {
                     </div>
 
                     {showEduForm && (
-                        <div className="admin-form-section" style={{ marginBottom: '1.5rem' }}>
+                        <div className="admin-form-section admin-form-constrained" style={{ marginBottom: '1.5rem' }}>
                             <h3 className="admin-form-section-title">{editingEdu ? 'Edit Education' : 'New Education'}</h3>
                             <form onSubmit={handleEduSubmit}>
                                 <div className="admin-form-grid" style={{ marginBottom: '1rem' }}>
@@ -398,7 +398,7 @@ export default function ContentAdminPage() {
                     </div>
 
                     {/* Add / Edit Skills Form */}
-                    <div className="admin-form-section" style={{ marginBottom: '1.5rem' }}>
+                    <div className="admin-form-section admin-form-constrained" style={{ marginBottom: '1.5rem' }}>
                         <h3 className="admin-form-section-title">{editingCategory ? `Edit: ${editingCategory}` : 'Add Skill Category'}</h3>
                         <form onSubmit={handleSkillsSubmit}>
                             <div className="admin-card-list">

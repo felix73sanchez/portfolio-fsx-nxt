@@ -135,7 +135,7 @@ export default function NewPostPage() {
       </p>
 
       {/* Form */}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="admin-form-constrained">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
@@ -159,12 +159,7 @@ export default function NewPostPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 rounded-lg transition outline-none text-sm"
-                style={{
-                  background: 'var(--light-gray)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--fg)'
-                }}
+                className="admin-form-input"
                 placeholder="Un titulo atractivo para tu articulo"
               />
             </div>
@@ -176,12 +171,7 @@ export default function NewPostPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={2}
-                className="w-full px-4 py-2.5 rounded-lg transition outline-none resize-none text-sm"
-                style={{
-                  background: 'var(--light-gray)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--fg)'
-                }}
+                className="admin-form-input"
                 placeholder="Resumen corto que aparecera en el listado del blog"
               />
             </div>
@@ -361,12 +351,7 @@ public class Main {
                 type="text"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg transition outline-none text-sm"
-                style={{
-                  background: 'var(--light-gray)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--fg)'
-                }}
+                className="admin-form-input"
                 placeholder="backend, java, arquitectura"
               />
               <p className="text-xs mt-2" style={{ color: 'var(--gray)' }}>
@@ -464,12 +449,8 @@ public class Main {
                       type="url"
                       value={coverImage}
                       onChange={(e) => setCoverImage(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 rounded-lg transition outline-none text-sm"
-                      style={{
-                        background: 'var(--light-gray)',
-                        border: '1px solid var(--border)',
-                        color: 'var(--fg)'
-                      }}
+                      className="admin-form-input"
+                      style={{ paddingLeft: '2.5rem' }}
                       placeholder="Pegar URL de imagen externa"
                     />
                   </div>

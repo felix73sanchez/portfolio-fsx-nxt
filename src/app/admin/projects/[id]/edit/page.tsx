@@ -195,7 +195,7 @@ export default function EditProjectPage() {
             </p>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="admin-form-constrained space-y-6">
                 {error && project && (
                     <div className="p-4 rounded-lg flex items-center gap-3"
                         style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171' }}>
@@ -216,12 +216,7 @@ export default function EditProjectPage() {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         required
-                        className="w-full px-4 py-2.5 rounded-lg transition outline-none text-sm"
-                        style={{
-                            background: 'var(--light-gray)',
-                            border: '1px solid var(--border)',
-                            color: 'var(--fg)'
-                        }}
+                        className="admin-form-input"
                         placeholder="Nombre del proyecto"
                     />
                 </div>
@@ -236,12 +231,7 @@ export default function EditProjectPage() {
                         onChange={(e) => setDescription(e.target.value)}
                         required
                         rows={4}
-                        className="w-full px-4 py-2.5 rounded-lg transition outline-none resize-none text-sm"
-                        style={{
-                            background: 'var(--light-gray)',
-                            border: '1px solid var(--border)',
-                            color: 'var(--fg)'
-                        }}
+                        className="admin-form-input"
                         placeholder="Describe tu proyecto..."
                     />
                 </div>
@@ -297,12 +287,7 @@ export default function EditProjectPage() {
                         value={technologies}
                         onChange={(e) => setTechnologies(e.target.value)}
                         required
-                        className="w-full px-4 py-2.5 rounded-lg transition outline-none text-sm"
-                        style={{
-                            background: 'var(--light-gray)',
-                            border: '1px solid var(--border)',
-                            color: 'var(--fg)'
-                        }}
+                        className="admin-form-input"
                         placeholder="Java, Spring Boot, Next.js, TypeScript"
                     />
                     <p className="text-xs mt-2" style={{ color: 'var(--gray)' }}>Separadas por comas</p>
@@ -344,12 +329,7 @@ export default function EditProjectPage() {
                                     <select
                                         value={link.icon}
                                         onChange={(e) => updateLink(index, 'icon', e.target.value)}
-                                        className="px-3 py-2 rounded-lg text-sm"
-                                        style={{
-                                            background: 'var(--light-gray)',
-                                            border: '1px solid var(--border)',
-                                            color: 'var(--fg)'
-                                        }}
+                                        className="admin-form-select"
                                     >
                                         {LINK_ICONS.map(icon => (
                                             <option key={icon.value} value={icon.value}>{icon.label}</option>
@@ -360,24 +340,14 @@ export default function EditProjectPage() {
                                         value={link.label}
                                         onChange={(e) => updateLink(index, 'label', e.target.value)}
                                         placeholder="Etiqueta"
-                                        className="flex-1 px-3 py-2 rounded-lg text-sm"
-                                        style={{
-                                            background: 'var(--light-gray)',
-                                            border: '1px solid var(--border)',
-                                            color: 'var(--fg)'
-                                        }}
+                                        className="admin-form-input"
                                     />
                                     <input
                                         type="url"
                                         value={link.url}
                                         onChange={(e) => updateLink(index, 'url', e.target.value)}
                                         placeholder="https://..."
-                                        className="flex-1 px-3 py-2 rounded-lg text-sm"
-                                        style={{
-                                            background: 'var(--light-gray)',
-                                            border: '1px solid var(--border)',
-                                            color: 'var(--fg)'
-                                        }}
+                                        className="admin-form-input"
                                     />
                                     <button
                                         type="button"
