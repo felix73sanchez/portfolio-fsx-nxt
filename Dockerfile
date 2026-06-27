@@ -1,7 +1,7 @@
 # =====================================================
 # Stage 1: Install dependencies
 # =====================================================
-FROM node:26-alpine3.23 AS deps
+FROM node:22-alpine AS deps
 WORKDIR /app
 
 # Install build dependencies for native modules (better-sqlite3)
@@ -13,7 +13,7 @@ RUN npm ci
 # =====================================================
 # Stage 2: Build the application
 # =====================================================
-FROM node:26-alpine3.23 AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -36,7 +36,7 @@ RUN rm -rf .next/standalone/node_modules/typescript \
 # =====================================================
 # Stage 3: Production runtime (minimal)
 # =====================================================
-FROM node:26-alpine3.23 AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
