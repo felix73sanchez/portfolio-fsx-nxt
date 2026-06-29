@@ -20,8 +20,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build needs a placeholder JWT_SECRET (real one provided at runtime)
+# NEXT_PUBLIC_* vars must be present at build time (they get inlined)
+ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV JWT_SECRET="build-time-placeholder-not-used-in-runtime"
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
 RUN npm run build
 
 # Remove TypeScript and other dev-only packages from standalone

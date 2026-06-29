@@ -11,11 +11,6 @@ import { SITE_URL } from '@/lib/site-url';
 
 export const revalidate = 60;
 
-export function generateStaticParams() {
-  ensureDbReady();
-  return getAllPublishedPosts().map((post) => ({ slug: post.slug }));
-}
-
 export async function generateMetadata({
   params,
 }: {
