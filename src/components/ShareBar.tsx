@@ -25,7 +25,7 @@ export default function ShareBar({ url, title }: ShareBarProps) {
   return (
     <div style={{ padding: '40px 0', textAlign: 'center', borderTop: '1px solid var(--border)' }}>
       <p style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '8px' }}>¿Te gustó este artículo?</p>
-      <p style={{ marginBottom: '32px', color: 'var(--gray)' }}>Compártelo con tu comunidad</p>
+      <p style={{ marginBottom: '32px', color: 'var(--gray)' }}>Compártelo con tu coro</p>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
         <a

@@ -10,12 +10,12 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: 'Blog',
   description:
-    'Artículos sobre desarrollo backend, arquitectura de software y mejores prácticas.',
+    'Este espacio es sobre mi vida y lo que voy descubriendo en el camino, la tecnología incluida.',
   alternates: { canonical: '/blog' },
   openGraph: {
     title: 'Blog | Felix Sanchez',
     description:
-      'Artículos sobre desarrollo backend, arquitectura de software y mejores prácticas.',
+      'Este espacio es sobre mi vida y lo que voy descubriendo en el camino, la tecnología incluida.',
     type: 'website',
     url: '/blog',
   },
@@ -35,7 +35,7 @@ export default function BlogPage() {
         <div className="mb-12">
           <h1 className="page-title mb-4">Blog</h1>
           <p className="text-lg" style={{ color: 'var(--gray)' }}>
-            Artículos sobre desarrollo backend, arquitectura de software y mejores prácticas.
+            Este espacio es sobre mi vida y lo que voy descubriendo en el camino, la tecnología incluida.
           </p>
         </div>
 
@@ -51,7 +51,7 @@ export default function BlogPage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">No hay artículos aún</h3>
             <p style={{ color: 'var(--gray)' }} className="mb-6">
-              Próximamente compartiré artículos sobre desarrollo backend y arquitectura.
+              Recuerda, nunca es tarde para empezar.
             </p>
             <Link href="/" className="cta-btn">
               Volver al inicio
@@ -155,7 +155,7 @@ export default function BlogPage() {
   <div className="project-card text-center" style={{ marginTop: '4rem', padding: '2.5rem' }}>
             <h3 className="text-xl font-bold mb-2">¿Te interesa el contenido?</h3>
             <p style={{ color: 'var(--gray)' }} className="mb-4">
-              Sígueme en mis redes para más artículos y tips de desarrollo.
+              Sígueme en mis redes, si te interesa me puedes preguntar lo que desees saber.
             </p>
             <div className="flex justify-center gap-4">
               <a
