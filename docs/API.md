@@ -319,7 +319,7 @@ Obtiene la configuración del sitio/perfil (público).
 ```json
 {
   "name": "Juan Pérez",
-  "title": "Desarrollador Full Stack",
+  "title": "Desarrollador Backend",
   "subtitle": "Construyendo cosas geniales",
   "location": "Ciudad de México, México",
   "about": "Texto sobre mí...",

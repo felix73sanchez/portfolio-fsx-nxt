@@ -23,13 +23,13 @@ export const metadata: Metadata = {
     default: "Felix Sanchez - Ingeniero de Software",
     template: "%s | Felix Sanchez",
   },
-  description: "Desarrollador Full Stack especializado en Java, .NET, Node.js | Backend Developer | Santo Domingo, RD",
+  description: "Ingeniero de software con más curiosidad que ego | .NET, Java, Node.js | Santo Domingo, RD",
   keywords: ["Felix Sanchez", "Desarrollador", "Backend", "Java", ".NET", "Node.js", "Oracle", "Spring Boot"],
   authors: [{ name: "Felix Sanchez" }],
   alternates: { canonical: "/" },
   openGraph: {
     title: "Felix Sanchez - Ingeniero de Software",
-    description: "Desarrollador Full Stack especializado en Java, .NET, Node.js",
+    description: "Ingeniero de software con más curiosidad que ego | .NET, Java, Node.js",
     type: "website",
     locale: "es_DO",
     url: SITE_URL,
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Felix Sanchez - Ingeniero de Software",
-    description: "Desarrollador Full Stack especializado en Java, .NET, Node.js",
+    description: "Ingeniero de software con más curiosidad que ego | .NET, Java, Node.js",
   },
 };
 
