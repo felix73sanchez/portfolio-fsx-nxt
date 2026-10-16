@@ -64,6 +64,7 @@ export default async function RootLayout({
         {/* Prevent flash of wrong theme - nonce allows this inline script via CSP */}
         <script
           nonce={nonce}
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `
               (function() {

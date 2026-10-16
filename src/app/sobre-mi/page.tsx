@@ -1,143 +1,92 @@
 import type { Metadata } from 'next';
-import { Header, Footer } from '@/components';
+import { Footer, Header } from '@/components';
+import { EducationEntry, PublicSectionLabel, ResumeEntry, SkillGroup } from '@/components/public';
 import { ensureDbReady } from '@/lib/db/ensure';
-import {
-  getSiteConfig,
-  getAllExperiences,
-  getSkillsByCategory,
-  getAllEducation,
-} from '@/lib/db/site';
+import { getAllEducation, getAllExperiences, getSiteConfig, getSkillsByCategory } from '@/lib/db/site';
 import { SITE_URL } from '@/lib/site-url';
 
-// Re-render at most once per minute so admin edits surface without a rebuild.
 export const revalidate = 60;
 
 export function generateMetadata(): Metadata {
   ensureDbReady();
   const profile = getSiteConfig();
-  const description = profile.about ? profile.about.slice(0, 160) : undefined;
-
   return {
     title: 'Sobre mí',
-    description,
+    description: profile.about ? profile.about.slice(0, 160) : undefined,
     alternates: { canonical: '/sobre-mi' },
-    openGraph: {
-      title: 'Sobre mí',
-      description,
-      type: 'profile',
-      url: `${SITE_URL}/sobre-mi`,
-    },
+    openGraph: { title: 'Sobre mí', description: profile.about?.slice(0, 160), type: 'profile', url: `${SITE_URL}/sobre-mi` },
   };
 }
 
 export default function SobreMiPage() {
   ensureDbReady();
-
   const profile = getSiteConfig();
   const experiences = getAllExperiences();
   const skills = getSkillsByCategory();
   const education = getAllEducation();
+  const aboutParagraphs = profile.about.split(/\n\s*\n/).filter(Boolean);
 
   return (
-    <main className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
-      <Header />
-
-      {/* Page header */}
-      <section className="container" style={{ paddingTop: '6rem', paddingBottom: '0.5rem' }}>
-        <h1 className="hero-name" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', marginBottom: '0.75rem' }}>
-          Sobre mí
-        </h1>
-        <p className="hero-role" style={{ marginBottom: 0 }}>
-          <span style={{ color: 'var(--accent)' }}>{profile.title}</span>
-          {profile.subtitle && (
-            <>
-              <span className="hero-role-sep" aria-hidden="true">/</span>
-              {profile.subtitle}
-            </>
-          )}
-        </p>
-      </section>
-
-      {/* About */}
-      {profile.about && (
-        <section className="section container">
-          <h2 className="section-title"><span className="section-accent" aria-hidden="true" />Quién soy</h2>
-            <div className="glass-card" style={{ padding: 'clamp(1.25rem, 3vw, 2rem)' }}>
-            <p style={{ color: 'var(--gray)', maxWidth: '65ch' }} className="leading-relaxed text-lg">
-              {profile.about}
-            </p>
+    <main className="public-page">
+      <Header github={profile.github} linkedin={profile.linkedin} phone={profile.phone} />
+      <div className="public-right-header font-mono">02 / perfil · trayectoria técnica</div>
+      <div className="public-content">
+        <section className="public-section-grid public-about-page-header">
+          <PublicSectionLabel index="02 /">Perfil</PublicSectionLabel>
+          <div className="public-page-intro">
+            <p className="public-kicker font-mono">Perfil profesional</p>
+            <h1>Sobre mí</h1>
+            <p><span className="public-intro-accent">{profile.title}</span>{profile.subtitle && <> <span className="public-intro-divider">/</span> {profile.subtitle}</>}</p>
           </div>
         </section>
-      )}
 
-      {/* Experience */}
-      {experiences.length > 0 && (
-        <section className="section container">
-          <h2 className="section-title"><span className="section-accent" aria-hidden="true" />Experiencia</h2>
-          {experiences.map(exp => (
-            <div key={exp.id} className="project-card" style={{ marginBottom: '1.25rem', borderLeft: '3px solid var(--accent)' }}>
-              <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
-                <h3 className="text-xl font-semibold">{exp.title}</h3>
-                <span style={{ color: 'var(--accent)' }} className="text-sm font-medium whitespace-nowrap">
-                  {exp.startDate} – {exp.current ? 'Presente' : exp.endDate}
-                </span>
-              </div>
-              <p style={{ color: 'var(--gray)' }} className="font-medium mb-3">
-                {exp.company} • {exp.location}
-              </p>
-              {exp.responsibilities.length > 0 && (
-                <ul style={{ color: 'var(--gray)' }} className="space-y-2 list-disc list-outside ml-5">
-                  {exp.responsibilities.map((r, i) => <li key={i}>{r}</li>)}
-                </ul>
-              )}
+        {profile.about && (
+          <section className="public-section-grid public-about-page-section">
+            <PublicSectionLabel index="01 /">Quién soy</PublicSectionLabel>
+            <div className="public-about-page-content">
+              <h2>Una forma de construir sistemas</h2>
+              <p className="public-about-lead">{aboutParagraphs[0]}</p>
+              {aboutParagraphs.slice(1).map((paragraph, index) => <p key={index} className="public-about-secondary">{paragraph}</p>)}
             </div>
-          ))}
-        </section>
-      )}
+          </section>
+        )}
 
-      {/* Skills */}
-      {Object.keys(skills).length > 0 && (
-        <section className="section container">
-          <h2 className="section-title"><span className="section-accent" aria-hidden="true" />Habilidades Técnicas</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {Object.entries(skills).map(([category, skillsArr]) => (
-              <div key={category} className="project-card">
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.85rem', color: 'var(--accent)' }}>{category}</h4>
-                <div className="flex flex-wrap gap-2">
-                  {skillsArr.map(skill => (
-                    <span key={skill} className="tech-badge">{skill}</span>
-                  ))}
-                </div>
+        {experiences.length > 0 && (
+          <section className="public-section-grid public-about-page-section">
+            <PublicSectionLabel index="02 /">Trayectoria</PublicSectionLabel>
+            <div className="public-section-main">
+              <h2 className="public-subsection-title">Experiencia</h2>
+              <div className="public-resume-list">
+                {experiences.map((experience) => <ResumeEntry key={experience.id} {...experience} />)}
               </div>
-            ))}
-          </div>
-        </section>
-      )}
+            </div>
+          </section>
+        )}
 
-{/* Education */}
-{education.length > 0 && (
-  <section className="section container">
-    <h2 className="section-title"><span className="section-accent" aria-hidden="true" />Educación</h2>
-    {education.map(edu => (
-      <div key={edu.id} className="project-card" style={{ marginBottom: '1.5rem', padding: 'clamp(1.25rem, 3vw, 2rem)' }}>
-        <div className="flex justify-between items-start flex-wrap" style={{ gap: '0.5rem' }}>
-          <div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.25rem' }}>{edu.degree}</h3>
-            <p style={{ color: 'var(--accent)', fontWeight: 500 }}>{edu.institution}</p>
-            {edu.location && <p style={{ color: 'var(--gray)', fontSize: '0.875rem' }}>{edu.location}</p>}
-          </div>
-          <span style={{ color: 'var(--gray)', fontSize: '0.875rem' }}>
-            {edu.startYear} – {edu.current ? 'Presente' : edu.endYear}
-          </span>
-        </div>
-        {edu.description && (
-          <p style={{ color: 'var(--gray)', marginTop: '0.75rem', fontSize: '0.875rem' }}>{edu.description}</p>
+        {Object.keys(skills).length > 0 && (
+          <section className="public-section-grid public-about-page-section">
+            <PublicSectionLabel index="03 /">Herramientas</PublicSectionLabel>
+            <div className="public-section-main">
+              <h2 className="public-subsection-title">Habilidades técnicas</h2>
+              <div className="public-skills-list">
+                {Object.entries(skills).map(([category, skillsArr]) => <SkillGroup key={category} category={category} skills={skillsArr} />)}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {education.length > 0 && (
+          <section className="public-section-grid public-about-page-section">
+            <PublicSectionLabel index="04 /">Formación</PublicSectionLabel>
+            <div className="public-section-main">
+              <h2 className="public-subsection-title">Educación</h2>
+              <div className="public-education-list">
+                {education.map((entry) => <EducationEntry key={entry.id} {...entry} />)}
+              </div>
+            </div>
+          </section>
         )}
       </div>
-    ))}
-  </section>
-)}
-
       <Footer github={profile.github} linkedin={profile.linkedin} email={profile.email} />
     </main>
   );

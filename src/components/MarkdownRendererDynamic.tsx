@@ -1,8 +1,4 @@
-'use client';
-
-import dynamic from 'next/dynamic';
-
-const MarkdownRenderer = dynamic(() => import('./MarkdownRenderer'), { ssr: false });
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface MarkdownRendererDynamicProps {
     content: string;

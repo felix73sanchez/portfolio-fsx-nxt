@@ -6,3 +6,4 @@ export { default as ShareBar } from './ShareBar';
 export { default as TableOfContents } from './TableOfContents';
 export { default as CommandPalette } from './CommandPalette';
 export { default as AdminLayout } from './AdminLayout';
+export * from './public';

@@ -85,6 +85,10 @@ export default function CommandPalette({ posts }: { posts: PostRef[] }) {
     [filtered]
   );
   const ordered = useMemo(() => groups.flatMap((g) => g.items), [groups]);
+  const indexById = useMemo(
+    () => new Map(ordered.map((command, index) => [command.id, index])),
+    [ordered]
+  );
 
   // Toggle with Cmd/Ctrl+K, or open via a custom event (e.g. the header button).
   useEffect(() => {
@@ -144,8 +148,6 @@ export default function CommandPalette({ posts }: { posts: PostRef[] }) {
     }
   };
 
-  let runningIndex = -1;
-
   return (
     <div
       className="cmdk-overlay"
@@ -172,8 +174,7 @@ export default function CommandPalette({ posts }: { posts: PostRef[] }) {
               <p className="cmdk-group">{group}</p>
               <ul>
                 {items.map((cmd) => {
-                  runningIndex += 1;
-                  const index = runningIndex;
+                  const index = indexById.get(cmd.id) ?? 0;
                   return (
                     <li key={cmd.id}>
                       <button
