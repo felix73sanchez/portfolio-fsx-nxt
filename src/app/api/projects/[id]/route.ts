@@ -1,25 +1,37 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { getProjectById, updateProject, deleteProject } from '@/lib/db/projects';
-import { requireOwnerFromCookies } from '@/lib/auth';
+import { getAuthFromCookies, requireOwnerFromCookies } from '@/lib/auth';
 import { UpdateProjectInput } from '@/types';
 
 // GET - Get single project
 export async function GET(
-    request: Request,
+    _request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { id } = await params;
-        const project = getProjectById(parseInt(id));
+        const projectId = Number(id);
+        if (!Number.isInteger(projectId) || projectId <= 0) {
+            return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+        }
+
+        const project = getProjectById(projectId);
 
         if (!project) {
             return NextResponse.json({ error: 'Proyecto no encontrado' }, { status: 404 });
         }
 
+        if (!project.visible) {
+            const auth = await getAuthFromCookies();
+            if (!auth || auth.role !== 'owner') {
+                return NextResponse.json({ error: 'Proyecto no encontrado' }, { status: 404 });
+            }
+        }
+
         return NextResponse.json(project);
     } catch {
-        return NextResponse.json({ error: 'Error fetching project' }, { status: 500 });
+        return NextResponse.json({ error: 'Error al obtener el proyecto' }, { status: 500 });
     }
 }
 
@@ -33,9 +45,14 @@ export async function PUT(
         if (auth instanceof NextResponse) return auth;
 
         const { id } = await params;
+        const projectId = Number(id);
+        if (!Number.isInteger(projectId) || projectId <= 0) {
+            return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+        }
+
         const body: UpdateProjectInput = await request.json();
 
-        const project = updateProject(parseInt(id), body);
+        const project = updateProject(projectId, body);
 
         if (!project) {
             return NextResponse.json({ error: 'Proyecto no encontrado' }, { status: 404 });
@@ -60,7 +77,12 @@ export async function DELETE(
         if (auth instanceof NextResponse) return auth;
 
         const { id } = await params;
-        const deleted = deleteProject(parseInt(id));
+        const projectId = Number(id);
+        if (!Number.isInteger(projectId) || projectId <= 0) {
+            return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+        }
+
+        const deleted = deleteProject(projectId);
 
         if (!deleted) {
             return NextResponse.json({ error: 'Proyecto no encontrado' }, { status: 404 });

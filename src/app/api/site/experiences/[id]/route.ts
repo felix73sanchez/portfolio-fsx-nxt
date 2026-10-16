@@ -1,15 +1,21 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getExperienceById, updateExperience, deleteExperience } from '@/lib/db/site';
 import { requireOwnerFromCookies } from '@/lib/auth';
 
 // GET - Get experience by ID
 export async function GET(
-    request: Request,
+    _request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { id } = await params;
-        const experience = getExperienceById(parseInt(id));
+        const expId = Number(id);
+        if (!Number.isInteger(expId) || expId <= 0) {
+            return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+        }
+
+        const experience = getExperienceById(expId);
 
         if (!experience) {
             return NextResponse.json({ error: 'Experiencia no encontrada' }, { status: 404 });
@@ -31,13 +37,21 @@ export async function PUT(
         if (auth instanceof NextResponse) return auth;
 
         const { id } = await params;
+        const expId = Number(id);
+        if (!Number.isInteger(expId) || expId <= 0) {
+            return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+        }
+
         const body = await request.json();
 
-        const experience = updateExperience(parseInt(id), body);
+        const experience = updateExperience(expId, body);
 
         if (!experience) {
             return NextResponse.json({ error: 'Experiencia no encontrada' }, { status: 404 });
         }
+
+        revalidatePath('/');
+        revalidatePath('/sobre-mi');
 
         return NextResponse.json(experience);
     } catch {
@@ -55,11 +69,19 @@ export async function DELETE(
         if (auth instanceof NextResponse) return auth;
 
         const { id } = await params;
-        const deleted = deleteExperience(parseInt(id));
+        const expId = Number(id);
+        if (!Number.isInteger(expId) || expId <= 0) {
+            return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+        }
+
+        const deleted = deleteExperience(expId);
 
         if (!deleted) {
             return NextResponse.json({ error: 'Experiencia no encontrada' }, { status: 404 });
         }
+
+        revalidatePath('/');
+        revalidatePath('/sobre-mi');
 
         return NextResponse.json({ success: true });
     } catch {

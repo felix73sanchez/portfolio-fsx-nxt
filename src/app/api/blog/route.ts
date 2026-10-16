@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getAllPublishedPosts, getAllPosts, getUserPosts, createPost } from '@/lib/db/blog';
 import { getUserFromRequest } from '@/lib/auth';
 import { initializeDatabase } from '@/lib/db/init';
@@ -84,6 +85,10 @@ export async function POST(request: NextRequest) {
 
         // Crear post con el ID del autor
         const post = createPost(postInput);
+
+        revalidatePath('/');
+        revalidatePath('/blog');
+        revalidatePath(`/blog/${post.slug}`);
 
         return NextResponse.json(post, { status: 201 });
     } catch (error) {

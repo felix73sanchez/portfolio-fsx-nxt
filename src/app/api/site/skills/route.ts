@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { initializeDatabase } from '@/lib/db/init';
 import { getSkillsByCategory, updateSkillsForCategory } from '@/lib/db/site';
 import { requireOwnerFromCookies } from '@/lib/auth';
@@ -28,6 +29,9 @@ export async function PUT(request: Request) {
         }
 
         updateSkillsForCategory(body.category, body.skills);
+
+        revalidatePath('/');
+        revalidatePath('/sobre-mi');
 
         const updatedSkills = getSkillsByCategory();
         return NextResponse.json(updatedSkills);

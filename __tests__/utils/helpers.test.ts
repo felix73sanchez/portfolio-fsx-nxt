@@ -3,6 +3,8 @@
  * Tests for helper functions and utilities
  */
 
+import { slugify } from '@/lib/db/blog';
+
 describe('Utility Functions', () => {
     describe('Date Formatting', () => {
         it('should create valid Date objects', () => {
@@ -19,31 +21,24 @@ describe('Utility Functions', () => {
     });
 
     describe('Slug Generation', () => {
-        const generateSlug = (title: string): string => {
-            return title
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .replace(/[^a-z0-9\s-]/g, '')
-                .replace(/\s+/g, '-')
-                .replace(/-+/g, '-')
-                .trim();
-        };
-
         it('should convert title to slug', () => {
-            expect(generateSlug('Hello World')).toBe('hello-world');
+            expect(slugify('Hello World')).toBe('hello-world');
         });
 
         it('should handle special characters', () => {
-            expect(generateSlug('Café con Leche')).toBe('cafe-con-leche');
+            expect(slugify('Café con Leche')).toBe('cafe-con-leche');
         });
 
         it('should handle multiple spaces', () => {
-            expect(generateSlug('Hello   World')).toBe('hello-world');
+            expect(slugify('Hello   World')).toBe('hello-world');
         });
 
-        it('should handle accented characters', () => {
-            expect(generateSlug('Programación Avanzada')).toBe('programacion-avanzada');
+        it('should handle accented characters and ñ', () => {
+            expect(slugify('Programación y Diseño en Español')).toBe('programacion-y-diseno-en-espanol');
+        });
+
+        it('should fallback to articulo when title has only special characters', () => {
+            expect(slugify('??? !!!')).toBe('articulo');
         });
     });
 

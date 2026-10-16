@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { initializeDatabase } from '@/lib/db/init';
 import { getAllExperiences, createExperience, Experience } from '@/lib/db/site';
 import { requireOwnerFromCookies } from '@/lib/auth';
@@ -28,6 +29,8 @@ export async function POST(request: Request) {
         }
 
         const experience = createExperience(body);
+        revalidatePath('/');
+        revalidatePath('/sobre-mi');
         return NextResponse.json(experience, { status: 201 });
     } catch {
         return NextResponse.json({ error: 'Error creating experience' }, { status: 500 });

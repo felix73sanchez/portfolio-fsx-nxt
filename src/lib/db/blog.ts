@@ -18,13 +18,36 @@ interface BlogPostRow {
   authorName: string | null;
 }
 
-function slugify(text: string): string {
-  return text
+export function slugify(text: string): string {
+  const base = text
     .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_]+/g, '-')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '');
+
+  return base || 'articulo';
+}
+
+function generateUniqueSlug(title: string, excludeId?: number): string {
+  const db = getDb();
+  const baseSlug = slugify(title);
+  let candidate = baseSlug;
+  let counter = 2;
+
+  while (true) {
+    const existing = excludeId
+      ? db.prepare('SELECT id FROM blog_posts WHERE slug = ? AND id != ?').get(candidate, excludeId)
+      : db.prepare('SELECT id FROM blog_posts WHERE slug = ?').get(candidate);
+
+    if (!existing) {
+      return candidate;
+    }
+    candidate = `${baseSlug}-${counter}`;
+    counter += 1;
+  }
 }
 
 export function getAllPublishedPosts(): BlogPost[] {
@@ -111,7 +134,7 @@ export function getPostById(id: number): BlogPost | null {
 
 export function createPost(input: CreateBlogPostInput): BlogPost {
   const db = getDb();
-  const slug = slugify(input.title);
+  const slug = generateUniqueSlug(input.title);
   const tags = JSON.stringify(input.tags || []);
   const now = new Date().toISOString();
 
@@ -156,6 +179,9 @@ export function updatePost(id: number, input: UpdateBlogPostInput): BlogPost {
 
   if (input.title !== undefined) {
     updates.title = input.title;
+    if (!post.published) {
+      updates.slug = generateUniqueSlug(input.title, id);
+    }
   }
   if (input.description !== undefined) {
     updates.description = input.description;

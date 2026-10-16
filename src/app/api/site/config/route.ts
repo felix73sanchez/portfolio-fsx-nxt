@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { initializeDatabase } from '@/lib/db/init';
 import { getSiteConfig, updateSiteConfigBatch, SiteConfig } from '@/lib/db/site';
 import { requireOwnerFromCookies } from '@/lib/auth';
@@ -25,6 +26,11 @@ export async function PUT(request: Request) {
         const body: Partial<SiteConfig> = await request.json();
 
         updateSiteConfigBatch(body);
+
+        revalidatePath('/');
+        revalidatePath('/sobre-mi');
+        revalidatePath('/proyectos');
+        revalidatePath('/blog');
 
         const updatedConfig = getSiteConfig();
         return NextResponse.json(updatedConfig);

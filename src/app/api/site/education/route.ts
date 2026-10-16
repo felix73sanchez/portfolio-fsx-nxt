@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { initializeDatabase } from '@/lib/db/init';
 import { getAllEducation, createEducation, Education } from '@/lib/db/site';
 import { requireOwnerFromCookies } from '@/lib/auth';
@@ -24,10 +25,12 @@ export async function POST(request: Request) {
         const body: Omit<Education, 'id' | 'createdAt' | 'updatedAt'> = await request.json();
 
         if (!body.degree || !body.institution) {
-            return NextResponse.json({ error: 'Título y institución son requeridos' }, { status: 400 });
+            return NextResponse.json({ error: 'Título e institución son requeridos' }, { status: 400 });
         }
 
         const education = createEducation(body);
+        revalidatePath('/');
+        revalidatePath('/sobre-mi');
         return NextResponse.json(education, { status: 201 });
     } catch {
         return NextResponse.json({ error: 'Error creating education' }, { status: 500 });

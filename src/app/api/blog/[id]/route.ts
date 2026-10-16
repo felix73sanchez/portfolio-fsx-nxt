@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getPostById, updatePost, deletePost } from '@/lib/db/blog';
 import { getUserFromRequest } from '@/lib/auth';
 import { initializeDatabase } from '@/lib/db/init';
@@ -17,7 +18,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     try {
         initializeDatabase();
         const { id } = await params;
-        const post = getPostById(parseInt(id));
+        const postId = Number(id);
+        if (!Number.isInteger(postId) || postId <= 0) {
+            return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+        }
+
+        const post = getPostById(postId);
 
         if (!post) {
             return NextResponse.json(
@@ -73,9 +79,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         }
 
         const { id } = await params;
+        const postId = Number(id);
+        if (!Number.isInteger(postId) || postId <= 0) {
+            return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+        }
 
         // Editor solo puede editar sus propios posts
-        const existing = getPostById(parseInt(id));
+        const existing = getPostById(postId);
         if (!existing) {
             return NextResponse.json(
                 { error: 'Post no encontrado' },
@@ -92,7 +102,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         const body: Record<string, unknown> = await request.json();
 
         // Validar tipos de campos opcionales si están presentes
-        const titleErr = body.title !== undefined ? null : null; // title is optional in updates
         const tagsErr = validateOptionalStringArray(body, 'tags');
         if (tagsErr) return NextResponse.json({ error: tagsErr.message }, { status: 400 });
 
@@ -113,7 +122,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
         const { title, description, content, coverImage, tags, published } = body;
 
-        const post = updatePost(parseInt(id), {
+        const post = updatePost(postId, {
             title: title as string | undefined,
             description: description as string | undefined,
             content: content as string | undefined,
@@ -121,6 +130,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             tags: tags as string[] | undefined,
             published: published as boolean | undefined,
         });
+
+        revalidatePath('/');
+        revalidatePath('/blog');
+        revalidatePath(`/blog/${existing.slug}`);
+        revalidatePath(`/blog/${post.slug}`);
 
         return NextResponse.json(post);
     } catch (error: unknown) {
@@ -155,9 +169,13 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         }
 
         const { id } = await params;
+        const postId = Number(id);
+        if (!Number.isInteger(postId) || postId <= 0) {
+            return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+        }
 
         // Editor solo puede eliminar sus propios posts
-        const existing = getPostById(parseInt(id));
+        const existing = getPostById(postId);
         if (!existing) {
             return NextResponse.json(
                 { error: 'Post no encontrado' },
@@ -171,7 +189,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        const deleted = deletePost(parseInt(id));
+        const deleted = deletePost(postId);
 
         if (!deleted) {
             return NextResponse.json(
@@ -179,6 +197,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
                 { status: 404 }
             );
         }
+
+        revalidatePath('/');
+        revalidatePath('/blog');
+        revalidatePath(`/blog/${existing.slug}`);
 
         return NextResponse.json({ message: 'Post eliminado exitosamente' });
     } catch (error) {

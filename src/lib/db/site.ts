@@ -69,7 +69,7 @@ export function updateSiteConfigBatch(config: Partial<SiteConfig>): void {
 
     const transaction = db.transaction(() => {
         for (const [key, value] of Object.entries(config)) {
-            if (value !== undefined) {
+            if (key in DEFAULT_CONFIG && typeof value === 'string') {
                 stmt.run(key, value, now);
             }
         }
