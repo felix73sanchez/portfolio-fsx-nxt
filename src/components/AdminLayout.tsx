@@ -221,9 +221,14 @@ export default function AdminLayout({ children, title, subtitle, actions }: Admi
                   </span>
                 )}
               </div>
-              <button onClick={handleLogout} className="admin-sidebar-logout font-mono">
-                {adminCopy.navigation.logout} ↗
-              </button>
+              <div className="admin-sidebar-footer-links">
+                <Link href="/" target="_blank" className="admin-sidebar-logout font-mono">
+                  {adminCopy.navigation.viewSite} ↗
+                </Link>
+                <button onClick={handleLogout} className="admin-sidebar-logout font-mono">
+                  {adminCopy.navigation.logout} ↗
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -273,8 +278,10 @@ export default function AdminLayout({ children, title, subtitle, actions }: Admi
                 href="/"
                 target="_blank"
                 className="admin-view-site font-mono"
+                title={adminCopy.navigation.viewSite}
+                aria-label={adminCopy.navigation.viewSite}
               >
-                <span>{adminCopy.navigation.viewSite}</span>
+                <span className="admin-view-site-label">{adminCopy.navigation.viewSite}</span>
                 <span aria-hidden="true">↗</span>
               </Link>
             </div>
