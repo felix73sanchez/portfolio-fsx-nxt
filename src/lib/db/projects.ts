@@ -41,6 +41,19 @@ export function getVisibleProjects(): Project[] {
     return rows.map(mapDbToProject);
 }
 
+// Get recent visible projects (for home page, newest first)
+export function getRecentProjects(limit: number = 3): Project[] {
+    const db = getDb();
+    const rows = db.prepare(`
+    SELECT * FROM projects 
+    WHERE visible = 1 
+    ORDER BY createdAt DESC, id DESC
+    LIMIT ?
+  `).all(limit) as DbProject[];
+
+    return rows.map(mapDbToProject);
+}
+
 // Get all projects (for admin)
 export function getAllProjects(): Project[] {
     const db = getDb();

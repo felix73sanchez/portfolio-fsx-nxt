@@ -4,7 +4,7 @@ import { BlogIndexRow, ProjectIndexRow, PublicSectionLabel } from '@/components/
 import { ensureDbReady } from '@/lib/db/ensure';
 import { getAllPublishedPosts } from '@/lib/db/blog';
 import { getSiteConfig } from '@/lib/db/site';
-import { getVisibleProjects } from '@/lib/db/projects';
+import { getRecentProjects } from '@/lib/db/projects';
 
 export const revalidate = 60;
 
@@ -12,7 +12,7 @@ export default async function Home() {
   ensureDbReady();
   const profile = getSiteConfig();
   const recentPosts = getAllPublishedPosts().slice(0, 3);
-  const featuredProjects = getVisibleProjects().slice(0, 3);
+  const featuredProjects = getRecentProjects(3);
   const aboutParagraphs = profile.about.split(/\n\s*\n/).filter(Boolean);
 
   return (
