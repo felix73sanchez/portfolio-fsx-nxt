@@ -57,3 +57,5 @@ next-env.d.ts
 !/public/uploads/.gitkeep
 # Local AI runtime state
 .atl/
+.claude/
+.kombai/
