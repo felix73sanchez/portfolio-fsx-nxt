@@ -22,7 +22,7 @@ export default function AdminDashboardPage() {
       try {
         const [postsRes, projectsRes] = await Promise.all([
           fetch('/api/blog'),
-          fetch('/api/projects')
+          fetch('/api/projects'),
         ]);
         const posts = await postsRes.json();
         const projects = await projectsRes.json();
@@ -31,7 +31,7 @@ export default function AdminDashboardPage() {
           posts: posts.length,
           projects: projects.length,
           published: posts.filter((p: BlogPost) => p.published).length,
-          drafts: posts.filter((p: BlogPost) => !p.published).length
+          drafts: posts.filter((p: BlogPost) => !p.published).length,
         });
         setRecentPosts(posts.slice(0, 5));
       } catch (error) {
@@ -40,40 +40,41 @@ export default function AdminDashboardPage() {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
   const statCards = [
-    { label: 'Total Posts', value: stats.posts, icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' },
-    { label: 'Projects', value: stats.projects, icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' },
-    { label: 'Published', value: stats.published, icon: 'M5 13l4 4L19 7' },
-    { label: 'Drafts', value: stats.drafts, icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
+    { label: 'Artículos', value: stats.posts, icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' },
+    { label: 'Proyectos', value: stats.projects, icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' },
+    { label: 'Publicados', value: stats.published, icon: 'M5 13l4 4L19 7' },
+    { label: 'Borradores', value: stats.drafts, icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
   ];
 
   const quickActions = [
-    { label: 'New Post', desc: 'Write a blog article', href: '/admin/posts/new', icon: 'M12 4v16m8-8H4' },
-    { label: 'New Project', desc: 'Add a project', href: '/admin/projects/new', icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' },
-    { label: 'Edit Profile', desc: 'Update your info', href: '/admin/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
+    { label: 'Nuevo artículo', desc: 'Escribe una publicación', href: '/admin/posts/new', icon: 'M12 4v16m8-8H4' },
+    { label: 'Nuevo proyecto', desc: 'Agrega un proyecto', href: '/admin/projects/new', icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' },
+    { label: 'Editar perfil', desc: 'Actualiza tus datos', href: '/admin/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
   ];
 
   if (loading) {
     return (
-      <AdminLayout title="Dashboard">
-        <div className="content-loading">
+      <AdminLayout title="Panel" subtitle="Resumen general de publicaciones, proyectos y actividad">
+        <div className="content-loading" aria-label="Cargando panel">
           <div className="content-spinner" />
+          <p className="content-loading-text">Cargando panel…</p>
         </div>
       </AdminLayout>
     );
   }
 
   return (
-    <AdminLayout title="Dashboard">
-      {/* Stats */}
+    <AdminLayout title="Panel" subtitle="Resumen general de publicaciones, proyectos y actividad">
       <div className="dashboard-stats">
         {statCards.map((stat) => (
           <div key={stat.label} className="stat-card">
             <div className="stat-card-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
               </svg>
             </div>
@@ -85,13 +86,12 @@ export default function AdminDashboardPage() {
         ))}
       </div>
 
-      {/* Quick Actions */}
-      <h3 className="dashboard-section-title">Quick Actions</h3>
+      <h2 className="dashboard-section-title">Acciones rápidas</h2>
       <div className="dashboard-actions">
         {quickActions.map((action) => (
           <Link key={action.href} href={action.href} className="action-card">
             <div className="action-card-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={action.icon} />
               </svg>
             </div>
@@ -103,23 +103,22 @@ export default function AdminDashboardPage() {
         ))}
       </div>
 
-      {/* Recent Posts */}
       <div className="content-header">
-        <h3 className="dashboard-section-title" style={{ marginBottom: 0 }}>Recent Posts</h3>
-        <Link href="/admin/posts" className="admin-btn admin-btn-sm">View all →</Link>
+        <h2 className="dashboard-section-title" style={{ marginBottom: 0 }}>Artículos recientes</h2>
+        <Link href="/admin/posts" className="admin-btn admin-btn-sm">Ver todos →</Link>
       </div>
 
       {recentPosts.length === 0 ? (
         <div className="content-empty">
-          <div className="content-empty-icon">
+          <div className="content-empty-icon" aria-hidden="true">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="32" height="32">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
             </svg>
           </div>
-          <p className="content-empty-title">No posts yet</p>
-          <p className="content-empty-text">Write your first blog article</p>
+          <p className="content-empty-title">No hay artículos todavía</p>
+          <p className="content-empty-text">Escribe tu primera publicación</p>
           <Link href="/admin/posts/new" className="admin-btn admin-btn-primary" style={{ marginTop: '1rem' }}>
-            Create First Post
+            Crear primer artículo
           </Link>
         </div>
       ) : (
@@ -130,16 +129,14 @@ export default function AdminDashboardPage() {
                 <div style={{ minWidth: 0 }}>
                   <div className="admin-card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span className={`content-badge ${post.published ? 'published' : 'draft'}`}>
-                      {post.published ? 'Published' : 'Draft'}
+                      {post.published ? 'Publicado' : 'Borrador'}
                     </span>
                     {post.title}
                   </div>
-                  {post.description && (
-                    <div className="admin-card-subtitle" style={{ marginTop: '0.25rem' }}>{post.description}</div>
-                  )}
+                  {post.description && <div className="admin-card-subtitle" style={{ marginTop: '0.25rem' }}>{post.description}</div>}
                 </div>
                 <div className="admin-card-meta" style={{ whiteSpace: 'nowrap' }}>
-                  {new Date(post.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                  {new Date(post.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                 </div>
               </div>
             </Link>

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { adminCopy } from '@/lib/admin-copy';
+import { useTheme } from './ThemeContext';
 import '@/app/admin/admin.css';
 
 interface AdminLayoutProps {
@@ -12,17 +14,45 @@ interface AdminLayoutProps {
   actions?: React.ReactNode;
 }
 
-export default function AdminLayout({ children, title, actions }: AdminLayoutProps) {
+export default function AdminLayout({ children, title, subtitle, actions }: AdminLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<{ name: string; role?: string } | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('userName');
     const storedRole = localStorage.getItem('userRole');
-    setUser({ name: storedUser || 'Admin', role: storedRole || undefined });
-  }, []);
+    if (storedUser || storedRole) {
+      setUser({ name: storedUser || 'Admin', role: storedRole || undefined });
+    }
+
+    let active = true;
+    fetch('/api/auth/me')
+      .then(async (res) => {
+        if (!active) return;
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.user) {
+            localStorage.setItem('userName', data.user.name);
+            localStorage.setItem('userRole', data.user.role);
+            setUser({ name: data.user.name, role: data.user.role });
+          }
+        } else if (res.status === 401) {
+          localStorage.removeItem('userName');
+          localStorage.removeItem('userRole');
+          router.push('/admin/login');
+        }
+      })
+      .catch(() => {
+        // Fallback to cached state if offline
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [router]);
 
   const handleLogout = async () => {
     try {
@@ -31,6 +61,7 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
       console.error('Logout error:', error);
     }
     localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
     router.push('/admin/login');
   };
 
@@ -56,8 +87,9 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
 
   const allNavItems = [
     {
+      index: '01',
       href: '/admin/dashboard',
-      label: 'Dashboard',
+      label: adminCopy.navigation.dashboard,
       icon: (
         <svg className="admin-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -67,8 +99,9 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
       requireOwner: false,
     },
     {
+      index: '02',
       href: '/admin/posts',
-      label: 'Blog Posts',
+      label: adminCopy.navigation.posts,
       icon: (
         <svg className="admin-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -78,8 +111,9 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
       requireOwner: false,
     },
     {
+      index: '03',
       href: '/admin/projects',
-      label: 'Projects',
+      label: adminCopy.navigation.projects,
       icon: (
         <svg className="admin-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -89,8 +123,9 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
       requireOwner: true,
     },
     {
+      index: '04',
       href: '/admin/content',
-      label: 'Site Content',
+      label: adminCopy.navigation.content,
       icon: (
         <svg className="admin-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -100,8 +135,9 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
       requireOwner: true,
     },
     {
+      index: '05',
       href: '/admin/profile',
-      label: 'Profile',
+      label: adminCopy.navigation.profile,
       icon: (
         <svg className="admin-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -134,20 +170,18 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
 
         {/* Brand */}
         <div className="admin-sidebar-brand">
-          <Link href="/" className="admin-sidebar-brand-link">
-            <div className="admin-sidebar-logo">
-              <svg className="admin-sidebar-logo-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            <span className="admin-sidebar-brand-text">FSX Admin</span>
+          <Link href="/admin/dashboard" className="admin-sidebar-brand-link">
+            <span className="logo">
+              <span className="logo-bracket">&lt;</span>
+              <span className="logo-text">FSX</span>
+              <span className="logo-bracket">/&gt;</span>
+            </span>
+            <span className="admin-sidebar-badge font-mono">ADMIN</span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
             className="admin-sidebar-close"
-            aria-label="Close sidebar"
+            aria-label="Cerrar menú"
           >
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
@@ -156,6 +190,7 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
         </div>
 
         {/* Navigation */}
+        <div className="admin-sidebar-section-label font-mono">Navegación</div>
         <nav className="admin-sidebar-nav">
           {navItems.map((item) => (
             <Link
@@ -164,8 +199,9 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
               onClick={() => setSidebarOpen(false)}
               className={`admin-sidebar-link ${isActive(item.href) ? 'active' : ''}`}
             >
+              <span className="admin-sidebar-index font-mono">{item.index}</span>
               {item.icon}
-              {item.label}
+              <span>{item.label}</span>
             </Link>
           ))}
         </nav>
@@ -173,13 +209,20 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
         {/* Footer / User */}
         <div className="admin-sidebar-footer">
           <div className="admin-sidebar-user">
-            <div className="admin-sidebar-avatar">
-              {user?.name?.[0]?.toUpperCase()}
+            <div className="admin-sidebar-avatar font-mono">
+              {user?.name?.[0]?.toUpperCase() || 'A'}
             </div>
             <div className="admin-sidebar-user-info">
-              <p className="admin-sidebar-user-name">{user?.name}</p>
-              <button onClick={handleLogout} className="admin-sidebar-logout">
-                Logout
+              <div className="admin-sidebar-user-row">
+                <p className="admin-sidebar-user-name">{user?.name}</p>
+                {user?.role && (
+                  <span className="admin-sidebar-role font-mono">
+                    {user.role === 'owner' ? 'Owner' : 'Editor'}
+                  </span>
+                )}
+              </div>
+              <button onClick={handleLogout} className="admin-sidebar-logout font-mono">
+                {adminCopy.navigation.logout} ↗
               </button>
             </div>
           </div>
@@ -195,28 +238,44 @@ export default function AdminLayout({ children, title, actions }: AdminLayoutPro
               <button
                 onClick={() => setSidebarOpen(true)}
                 className="admin-mobile-toggle"
-                aria-label="Open sidebar"
+                aria-label="Abrir menú"
               >
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <div>
+              <div className="admin-header-titles">
                 <h1 className="admin-header-title">{title}</h1>
+                {subtitle && <p className="admin-header-subtitle">{subtitle}</p>}
               </div>
             </div>
             <div className="admin-header-right">
               {actions}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="admin-btn admin-btn-icon"
+                aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+                title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+              >
+                {theme === 'dark' ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                )}
+              </button>
               <Link
                 href="/"
                 target="_blank"
-                className="admin-view-site"
+                className="admin-view-site font-mono"
               >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-                View Site
+                <span>{adminCopy.navigation.viewSite}</span>
+                <span aria-hidden="true">↗</span>
               </Link>
             </div>
           </div>
