@@ -1,4 +1,5 @@
 import bcryptjs from 'bcryptjs';
+import crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
@@ -158,19 +159,44 @@ export async function requireOwner(request: NextRequest): Promise<User | NextRes
 // Password Reset Functions
 // ============================================
 
-export function setResetToken(email: string, token: string, expiry: string): boolean {
+export function hashResetToken(rawToken: string): string {
+  return crypto.createHash('sha256').update(rawToken).digest('hex');
+}
+
+export function verifyServerSecret(providedSecret: string): { configured: boolean; valid: boolean } {
+  const expectedSecret = process.env.ADMIN_RESET_SECRET || process.env.INVITATION_CODE;
+  if (!expectedSecret) {
+    return { configured: false, valid: false };
+  }
+
+  const providedBuf = Buffer.from(String(providedSecret));
+  const expectedBuf = Buffer.from(expectedSecret);
+
+  if (providedBuf.length !== expectedBuf.length) {
+    return { configured: true, valid: false };
+  }
+
+  return {
+    configured: true,
+    valid: crypto.timingSafeEqual(providedBuf, expectedBuf),
+  };
+}
+
+export function setResetToken(email: string, rawToken: string, expiry: string): boolean {
   const db = getDb();
+  const hashedToken = hashResetToken(rawToken);
   const result = db
     .prepare('UPDATE users SET resetToken = ?, resetTokenExpiry = ? WHERE email = ?')
-    .run(token, expiry, email);
+    .run(hashedToken, expiry, email);
   return result.changes > 0;
 }
 
-export function getUserByResetToken(token: string): { id: number; email: string } | null {
+export function getUserByResetToken(rawToken: string): { id: number; email: string } | null {
   const db = getDb();
+  const hashedToken = hashResetToken(rawToken);
   const row = db
-    .prepare(`SELECT id, email FROM users WHERE resetToken = ? AND resetTokenExpiry > datetime('now')`)
-    .get(token) as { id: number; email: string } | undefined;
+    .prepare(`SELECT id, email FROM users WHERE resetToken = ? AND datetime(resetTokenExpiry) > datetime('now')`)
+    .get(hashedToken) as { id: number; email: string } | undefined;
   return row || null;
 }
 

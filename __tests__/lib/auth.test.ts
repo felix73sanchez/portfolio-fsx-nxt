@@ -3,7 +3,7 @@
  * Tests for password hashing, JWT tokens, and user authentication
  */
 
-import { hashPassword, comparePasswords, generateToken, verifyToken } from '@/lib/auth';
+import { hashPassword, comparePasswords, generateToken, verifyToken, hashResetToken, verifyServerSecret } from '@/lib/auth';
 
 describe('Auth Library', () => {
     describe('Password Hashing', () => {
@@ -77,6 +77,42 @@ describe('Auth Library', () => {
             const decoded = verifyToken(tamperedToken);
 
             expect(decoded).toBeNull();
+        });
+    });
+
+    describe('Password Reset Security', () => {
+        const originalInvitationCode = process.env.INVITATION_CODE;
+        const originalResetSecret = process.env.ADMIN_RESET_SECRET;
+
+        afterEach(() => {
+            process.env.INVITATION_CODE = originalInvitationCode;
+            process.env.ADMIN_RESET_SECRET = originalResetSecret;
+        });
+
+        it('should deterministically hash reset tokens with SHA-256', () => {
+            const rawToken = 'my-raw-reset-token-12345';
+            const hash1 = hashResetToken(rawToken);
+            const hash2 = hashResetToken(rawToken);
+
+            expect(hash1).toBe(hash2);
+            expect(hash1).not.toBe(rawToken);
+            expect(hash1).toHaveLength(64); // SHA-256 hex digest
+        });
+
+        it('should validate server secret against INVITATION_CODE or ADMIN_RESET_SECRET', () => {
+            process.env.INVITATION_CODE = 'my-server-secret';
+            delete process.env.ADMIN_RESET_SECRET;
+
+            expect(verifyServerSecret('my-server-secret')).toEqual({ configured: true, valid: true });
+            expect(verifyServerSecret('wrong-secret')).toEqual({ configured: true, valid: false });
+        });
+
+        it('should prioritize ADMIN_RESET_SECRET when set', () => {
+            process.env.INVITATION_CODE = 'invite-secret';
+            process.env.ADMIN_RESET_SECRET = 'dedicated-reset-secret';
+
+            expect(verifyServerSecret('dedicated-reset-secret')).toEqual({ configured: true, valid: true });
+            expect(verifyServerSecret('invite-secret')).toEqual({ configured: true, valid: false });
         });
     });
 });

@@ -59,7 +59,6 @@ function buildCspHeader(nonce: string, isDev: boolean): string {
         `base-uri ${baseUri}`,
         `form-action ${formAction}`,
         `object-src 'none'`,
-        `base-uri ${baseUri}`,
     ].join('; ');
 }
 
@@ -99,6 +98,7 @@ const publicRoutes = [
     '/admin/reset-password',
 ];
 const protectedPrefixes = ['/admin'];
+const ownerOnlyPrefixes = ['/admin/projects', '/admin/content', '/admin/profile'];
 
 function getJwtSecret(): Uint8Array {
     const secret = process.env.JWT_SECRET;
@@ -109,13 +109,13 @@ function getJwtSecret(): Uint8Array {
     return new TextEncoder().encode(secret);
 }
 
-async function verifyToken(token: string): Promise<boolean> {
+async function verifyTokenPayload(token: string): Promise<{ role?: string } | null> {
     try {
         const secret = getJwtSecret();
-        await jwtVerify(token, secret);
-        return true;
+        const { payload } = await jwtVerify(token, secret);
+        return payload as { role?: string };
     } catch {
-        return false;
+        return null;
     }
 }
 
@@ -152,13 +152,23 @@ export async function proxy(request: NextRequest) {
             return redirectResponse;
         }
 
-        const isValid = await verifyToken(token);
-        if (!isValid) {
+        const payload = await verifyTokenPayload(token);
+        if (!payload) {
             const loginUrl = new URL('/admin/login', request.url);
             loginUrl.searchParams.set('redirect', pathname);
             const redirectResponse = NextResponse.redirect(loginUrl);
             setSecurityHeaders(redirectResponse, cspHeader, nonce, isDev);
             redirectResponse.cookies.delete('auth-token');
+            return redirectResponse;
+        }
+
+        const requiresOwner = ownerOnlyPrefixes.some(
+            prefix => pathname === prefix || pathname.startsWith(prefix + '/')
+        );
+        if (requiresOwner && payload.role !== 'owner') {
+            const dashboardUrl = new URL('/admin/dashboard', request.url);
+            const redirectResponse = NextResponse.redirect(dashboardUrl);
+            setSecurityHeaders(redirectResponse, cspHeader, nonce, isDev);
             return redirectResponse;
         }
     }
